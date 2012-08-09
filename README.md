@@ -2,7 +2,7 @@ zsh-notify
 =======
 
 A plugin for the Z shell (and OS X) that posts desktop notifications
-when any command fail or when a long-running command finish without
+when any command fails or when a long-running command finish without
 errors, if the terminal application is in the background.
 
 Requirements

@@ -6,12 +6,10 @@
 # Examples:
 #
 #   echo 'set number of columns of terminal 2 to 80' | tell-iterm2
-#   # iTerm
 #
 # Use the -tab option to target the current tab, eg.:
 #
 #   echo 'write text "ls -l" & return' | tell-iterm2 -tab
-#   # "/dev/ttys018"
 #
 # Use the -d option to change the text item delimiter for the output,
 # eg.:
