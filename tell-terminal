@@ -1,0 +1,115 @@
+# vim: set nowrap filetype=zsh:
+#
+# Command Terminal.app from the shell by sending it "snippets" of
+# AppleScript code.
+#
+#  CMD='set background color of default settings to {0, 0, 0}' 
+#  echo $CMD | tell-terminal
+#
+# Or target active tab:
+#
+#  echo 'set number of columns to 80' | tell-terminal -tab
+#
+# Set the text item delimiter with the -d option:
+#
+#  echo processes | tell-terminal -tab      
+#  # Prints:
+#  # login, zsh, osascript
+#
+#  echo processes | tell-terminal -tab -d"\n"
+#  # Prints:
+#  # login
+#  # zsh
+#  # osascript
+if [[ ! -x `which osascript` ]]; then
+    echo "osascript not found -- not on a Mac?"
+    return 1
+fi
+
+local tabvar term_running tab_found  delimcmd
+typeset -A delimvar
+zparseopts -D -- tab=tabvar d:=delimvar
+
+# Quit on problem with options
+ret=$?
+if [[ $ret != 0 ]] return $ret
+
+if [[ $delimvar[-d] != "" ]]; then
+    delimcmd=`cat <<DCMD
+set _result to result
+set Applescript's text item delimiters to "$delimvar"
+_result as text
+DCMD`
+fi
+
+term_running=`osascript <<OSA
+tell application "System Events"
+    set c to count of (application processes whose bundle identifier is "com.apple.Terminal")
+    return c
+end
+OSA`
+
+if [[ $term_running == 0 ]]; then
+    echo "Terminal is not running!" >&2
+    return 1
+fi
+
+# No tab option, send command to terminal then quit
+if [[ $tabvar != "-tab" ]]; then
+    scpt=`cat /dev/stdin`
+    osascript <<OSA
+tell application id "com.apple.Terminal"
+    $scpt 
+end tell
+$delimcmd
+OSA
+    osascript_status=$?
+    if [[ $osascript_status != 0 ]] return $osascript_status
+    return 0
+fi
+
+# Got the -tab option, look for a tab for this $TTY...
+tab_found=`osascript <<OSA
+tell application id "com.apple.Terminal"
+	repeat with i from 1 to count of windows
+		tell window i
+			try
+				if (tabs whose tty is "$TTY") is not {} then return 1
+			end try
+		end tell
+	end repeat
+end tell
+return 0
+OSA`
+
+if [[ $tab_found == 0 ]]; then
+    echo "Can't find tab for $TTY!"
+    return 1
+fi
+
+# ...and read + send the command(s)
+scpt=`cat /dev/stdin`
+
+osascript <<OSA
+tell application id "com.apple.Terminal"
+	set _tab to false
+	repeat with i from 1 to count of windows
+		tell window i
+			try
+				set _tabs to (tabs whose tty is "$TTY")
+				if _tabs is not {} then
+					set _tab to item 1 of _tabs
+					exit repeat
+				end if
+			end try
+		end tell
+	end repeat
+	
+	if _tab is false then return
+	tell _tab
+		$scpt
+	end tell
+end tell
+$delimcmd
+OSA
+

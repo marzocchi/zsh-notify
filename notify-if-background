@@ -1,0 +1,71 @@
+# vim: set nowrap filetype=zsh:
+#
+# Post a notification using either Notification Center using
+# terminal-notifier.app or Growl, through growlnotify.
+#
+# Notification is effectively posted only if the terminal application
+# (either Terminal.app or iTerm2) is in background, or if the session tab
+# is not active (or in other word when you are not looking at the shell). 
+#
+# Exits with status 1 if the terminal app is unsupported, or if the
+# notifier program is not found.
+#
+# Exits with status 2 if the terminal is frontmost or the tab is active.
+#
+# Requirements:
+#
+# - terminal-notifier.app
+#   https://github.com/alloy/terminal-notifier 
+#
+# - growlnotify
+#   http://growl.info/extras.php/#growlnotify
+
+local term_id title icon_switch
+local -a otitle oicon
+zparseopts t:=otitle -icon:=oicon
+
+icon=$oicon[2]
+title=$otitle[2]
+message=$(<&0)
+
+[[ -z "$SYS_NOTIFIER" ]] \
+  && SYS_NOTIFIER="/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier"
+
+[[ -z "$GROWL_NOTIFIER" ]] \
+  && GROWL_NOTIFIER="/usr/local/bin/growlnotify"
+
+if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
+  term_id='com.googlecode.iterm2'
+elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+  term_id='com.apple.terminal'
+else
+  echo "Unsupported terminal: $TERM_PROGRAM" > /dev/stderr 
+  return 1;
+fi
+
+if [[ $term_id == 'com.googlecode.iterm2' ]]; then
+  TT='tell-iterm2'
+  if [[ `$TT <<< "frontmost and (tty of (current session of current terminal) is equal to \"$TTY\")"` == "true" ]]; then
+    return 2
+  fi
+else
+  TT='tell-terminal'
+  if [[ `$TT <<<frontmost` == "true" && `$TT -tab <<<selected` == "true" ]]; then
+    return 2
+  fi
+fi
+
+#cat /dev/stdin | growlnotify "$@"
+# growlnotify "$@" < /dev/stdin
+
+
+if [[ -x "$SYS_NOTIFIER" ]]; then
+  "$SYS_NOTIFIER" -activate "$term_id" -title "$title" -message "$message" 1>/dev/null 
+elif [[ -x "$GROWL_NOTIFIER" ]]; then
+  [[ ! -z "$icon" ]] && icon_switch="--iconpath $icon"
+  echo "$message" | "$GROWL_NOTIFIER" "$title" 
+else
+  echo "No notifier program found." > /dev/stderr
+  return 1
+fi
+
