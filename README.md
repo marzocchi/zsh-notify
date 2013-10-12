@@ -1,33 +1,34 @@
 zsh-notify
 =======
 
-A plugin for the Z shell (and OS X) that posts desktop notifications
-when any command fails or when a long-running command finish without
-errors, if the terminal application is in the background.
+A plugin for the Z shell (on OS X) that posts desktop notifications when a
+command terminates with error or when it took more than 30 seconds to
+complete, if the terminal application is in the background (or its terminal
+tab is inactive).
 
 Requirements
 ---
 
+- Either Terminal.app or [iTerm2][iterm2].
+
 - [terminal-notifier.app][terminal-notifier] is required for posting to
   Mountain Lion's Notification Center
 
-- [growlnotify][growlnotify] is required for posting to Growl in older
+- [growlnotify][growlnotify] is required for posting to Growl in previous
   versions of Mac OS X.
-
-- Either Terminal.app or [iTerm2][iterm2].
 
 Usage: 
 ---
 
-Just source it.
+Just source notify.plugin.zsh.
 
 Configuration:
 ---
 
-By default, a notification about a "long-running", successful, command is
-posted only if it took at least 30 seconds to complete. To change this
-timeout, set the `NOTIFY_COMMAND_COMPLETE_TIMEOUT` environment variable
-to a value (in seconds).
+While notifications about failed commands are always posted, notifications
+for successful commands are posted only if they took at least 30 seconds to
+complete. To change the timeout set the NOTIFY_COMMAND_COMPLETE_TIMEOUT
+environment variable to a different value in seconds.
 
 Also, the plugin assumes that `terminal-notifier.app` is installed in
 `/Applications` and that `growlnotify` lives in `/usr/local/bin`. You can
