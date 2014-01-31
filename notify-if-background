@@ -29,9 +29,9 @@ title=$otitle[2]
 message=$(<&0)
 
 if [[ -z "$SYS_NOTIFIER" ]]; then
-  [[ -f "/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" ]]
+  [[ -f "/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" ]] \
     && SYS_NOTIFIER="/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" \
-    || [[ -f "/usr/local/bin/terminal-notifier" ]]
+    || [[ -f "/usr/local/bin/terminal-notifier" ]] \
     && SYS_NOTIFIER="/usr/local/bin/terminal-notifier"
 fi
 
