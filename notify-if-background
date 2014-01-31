@@ -64,7 +64,7 @@ fi
 
 
 if [[ -x "$SYS_NOTIFIER" ]]; then
-  "$SYS_NOTIFIER" -activate "$term_id" -title "$title" -message "$message" 1>/dev/null 
+  "$SYS_NOTIFIER" -activate "$term_id" -sender "$term_id" -title "$title" -message "$message" 1>/dev/null 
 elif [[ -x "$GROWL_NOTIFIER" ]]; then
   [[ ! -z "$icon" ]] && icon_switch="--iconpath $icon"
   echo "$message" | "$GROWL_NOTIFIER" "$title" 
