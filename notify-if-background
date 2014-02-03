@@ -29,9 +29,9 @@ title=$otitle[2]
 message=$(<&0)
 
 if [[ -z "$SYS_NOTIFIER" ]]; then
-  [[ -f "/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" ]]
+  [[ -f "/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" ]] \
     && SYS_NOTIFIER="/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" \
-    || [[ -f "/usr/local/bin/terminal-notifier" ]]
+    || [[ -f "/usr/local/bin/terminal-notifier" ]] \
     && SYS_NOTIFIER="/usr/local/bin/terminal-notifier"
 fi
 
@@ -64,7 +64,7 @@ fi
 
 
 if [[ -x "$SYS_NOTIFIER" ]]; then
-  "$SYS_NOTIFIER" -activate "$term_id" -title "$title" -message "$message" 1>/dev/null 
+  "$SYS_NOTIFIER" -activate "$term_id" -sender "$term_id" -title "$title" -message "$message" 1>/dev/null 
 elif [[ -x "$GROWL_NOTIFIER" ]]; then
   [[ ! -z "$icon" ]] && icon_switch="--iconpath $icon"
   echo "$message" | "$GROWL_NOTIFIER" "$title" 
