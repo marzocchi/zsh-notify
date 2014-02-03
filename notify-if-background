@@ -28,12 +28,8 @@ icon=$oicon[2]
 title=$otitle[2]
 message=$(<&0)
 
-if [[ -z "$SYS_NOTIFIER" ]]; then
-  [[ -f "/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" ]] \
-    && SYS_NOTIFIER="/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier" \
-    || [[ -f "/usr/local/bin/terminal-notifier" ]] \
-    && SYS_NOTIFIER="/usr/local/bin/terminal-notifier"
-fi
+[[ -z "$SYS_NOTIFIER" ]] \
+  && SYS_NOTIFIER="/usr/local/bin/terminal-notifier"
 
 [[ -z "$GROWL_NOTIFIER" ]] \
   && GROWL_NOTIFIER="/usr/local/bin/growlnotify"

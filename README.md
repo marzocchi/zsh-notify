@@ -2,9 +2,9 @@ zsh-notify
 =======
 
 A plugin for the Z shell (on OS X) that posts desktop notifications when a
-command terminates with error or when it took more than 30 seconds to
-complete, if the terminal application is in the background (or its terminal
-tab is inactive).
+command terminates with a non-zero exit status or when it took more than 30
+seconds to complete, if the terminal application is in the background (or the
+command's terminal tab is inactive).
 
 Requirements
 ---
@@ -17,7 +17,7 @@ Requirements
 - [growlnotify][growlnotify] is required for posting to Growl in previous
   versions of Mac OS X.
 
-Usage: 
+Usage
 ---
 
 Just source notify.plugin.zsh.
@@ -30,10 +30,10 @@ for successful commands are posted only if they took at least 30 seconds to
 complete. To change the timeout set the NOTIFY_COMMAND_COMPLETE_TIMEOUT
 environment variable to a different value in seconds.
 
-Also, the plugin assumes that `terminal-notifier.app` is installed in
-`/Applications` and that `growlnotify` lives in `/usr/local/bin`. You can
-change these defaults by setting the `$SYS_NOTIFIER` and `$GROWL_NOTIFIER`
-environment variables.
+Also, the plugin assumes that both `terminal-notifier` and `growlnotify` are
+installed in `/usr/local/bin`. You can change these defaults by setting the
+`$SYS_NOTIFIER` or `$GROWL_NOTIFIER` environment variables.
+
 
 [growlnotify]: http://growl.info/extras.php/#growlnotify
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
