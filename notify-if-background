@@ -39,7 +39,7 @@ if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
 elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
   term_id='com.apple.terminal'
 else
-  echo "Unsupported terminal: $TERM_PROGRAM" > /dev/stderr 
+  # echo "Unsupported terminal: $TERM_PROGRAM" > /dev/stderr 
   return 1;
 fi
 
