@@ -48,7 +48,7 @@ function store-command-stats() {
   start_time=`date "+%s"`
 }
 
-
+autoload add-zsh-hook
 autoload -U tell-terminal
 autoload -U tell-iterm2
 autoload -U notify-if-background
