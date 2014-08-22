@@ -12,6 +12,8 @@
 #
 # Exits with status 2 if the terminal is frontmost or the tab is active.
 #
+# Exits with status 3 if the pane is active in tmux.
+#
 # Requirements:
 #
 # - terminal-notifier.app
@@ -54,6 +56,15 @@ else
     return 2
   fi
 fi
+
+if [ $TMUX ]; then
+  TMUX_ACTIVE_TTY=$(tmux list-windows -a -F '#{window_active} #{pane_tty}' | egrep '^1' | cut -f2 -d' ')
+
+  if [ $TTY = $TMUX_ACTIVE_TTY ]; then
+      return 3
+  fi
+fi
+
 
 #cat /dev/stdin | growlnotify "$@"
 # growlnotify "$@" < /dev/stdin
