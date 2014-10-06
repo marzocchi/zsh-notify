@@ -44,8 +44,18 @@ else
 fi
 
 if [[ $term_id == 'com.googlecode.iterm2' ]]; then
-  TT='tell-iterm2'
-  if [[ `$TT <<< "frontmost and (tty of (current session of current terminal) is equal to \"$TTY\")"` == "true" ]]; then
+  # Use System Events as there's no frontmost property at least in current nightly
+  local iterm_frontmost tty_active
+  iterm_frontmost=`osascript <<OSA
+        tell application "System Events"
+            tell item 1 of (application processes whose bundle identifier is "com.googlecode.iterm2") to ¬
+                get its frontmost
+        end tell
+OSA`
+
+  tty_active=`tell-iterm2 <<< "tty of (current session of current tab of current window) is equal to \"$TTY\""`
+
+  if [[ $iterm_frontmost == "true" && $tty_active == "true" ]]; then
     return 2
   fi
 else
