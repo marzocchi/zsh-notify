@@ -1,3 +1,6 @@
+**Find a version that works with iTerm2's nightlies in the
+[“next-iterm” branch →](https://github.com/marzocchi/zsh-notify/tree/next-iterm)**
+
 zsh-notify
 =======
 
