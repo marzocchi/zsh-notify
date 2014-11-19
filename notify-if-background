@@ -20,7 +20,7 @@
 # - growlnotify
 #   http://growl.info/extras.php/#growlnotify
 
-local term_id title icon_switch
+local term_id title icon_switch the_tty
 local -a otitle oicon
 zparseopts t:=otitle -icon:=oicon
 
@@ -43,9 +43,15 @@ else
   return 1;
 fi
 
+if [[ ${TMUX+1} ]]; then
+  the_tty=`tmux display-message -p '#{client_tty}'`
+else
+  the_tty=$TTY
+fi
+
 if [[ $term_id == 'com.googlecode.iterm2' ]]; then
   TT='tell-iterm2'
-  if [[ `$TT <<< "frontmost and (tty of (current session of current terminal) is equal to \"$TTY\")"` == "true" ]]; then
+  if [[ `$TT <<< "frontmost and (tty of (current session of current terminal) is equal to \"$the_tty\")"` == "true" ]]; then
     return 2
   fi
 else
@@ -63,7 +69,7 @@ if [[ -x "$SYS_NOTIFIER" ]]; then
   "$SYS_NOTIFIER" -activate "$term_id" -sender "$term_id" -title "$title" -message "$message" 1>/dev/null 
 elif [[ -x "$GROWL_NOTIFIER" ]]; then
   [[ ! -z "$icon" ]] && icon_switch="--iconpath $icon"
-  echo "$message" | "$GROWL_NOTIFIER" "$title" 
+  echo "$message" | "$GROWL_NOTIFIER" "$title"
 else
   echo "No notifier program found." > /dev/stderr
   return 1
