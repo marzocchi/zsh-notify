@@ -67,16 +67,11 @@ if [[ $tabvar == "-tab" ]]; then
 
   osascript <<OSA
   tell app "iTerm"
-    tell my find_tab("$the_tty")
+    tell (sessions of tabs of terminal windows whose tty is "$the_tty")
       $user_scpt
     end
     $delimcmd
   end
-  to find_tab(tty_name)
-    tell application "iTerm"
-      first item of (sessions of current terminal whose tty is equal to tty_name)
-    end tell
-  end find_tab
 OSA
 else
   osascript <<OSA
