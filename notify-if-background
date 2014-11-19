@@ -1,100 +1,203 @@
 # vim: set nowrap filetype=zsh:
 #
-# Post a notification using either Notification Center using
-# terminal-notifier.app or Growl, through growlnotify.
-#
-# Notification is effectively posted only if the terminal application
-# (either Terminal.app or iTerm2) is in background, or if the session tab
-# is not active (or in other word when you are not looking at the shell). 
-#
-# Exits with status 1 if the terminal app is unsupported, or if the
-# notifier program is not found.
-#
-# Exits with status 2 if the terminal is frontmost or the tab is active.
-#
-# Requirements:
-#
-# - terminal-notifier.app
-#   https://github.com/alloy/terminal-notifier 
-#
-# - growlnotify
-#   http://growl.info/extras.php/#growlnotify
+# notify-if-background will exit with status 1 if the terminal application is
+# not one for which we know how to query the "frontmost/background" status, and
+# with status 2 if the terminal application or the current shell tab/window is
+# active. See README.md for configuration options.
+() {
+    local term_id type message notifier
 
-local term_id title icon_switch
-local -a otitle oicon
-zparseopts t:=otitle -icon:=oicon
+    type=$1
+    message=$(<&0)
 
-icon=$oicon[2]
-title=$otitle[2]
-message=$(<&0)
+    # Find a "term_id", a string that will be used later to dispatch different
+    # commands to determine whether the terminal application is active or in
+    # background.
+    function find-current-term-id {
+        local resources_dir
+        zstyle -s ':notify:' resources-dir resources_dir
 
-[[ -z "$SYS_NOTIFIER" ]] \
-  && SYS_NOTIFIER="/usr/local/bin/terminal-notifier"
+        if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
+            # Try to detect recent iTerm2 builds that use the different AS
+            # dictionary by running a script that will fail in newer but
+            # succeed in older versions.
+            if osascript "$resources_dir"/fails-on-iterm-nightly.applescript 2>/dev/null; then
+                echo iterm2
+            else
+                echo iterm2-nightly
+            fi
+        elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+            echo apple-terminal
+        elif which xdotool > /dev/null 2>&1; then
+            echo xdotool
+        else
+            return 1
+        fi
+    }
 
-[[ -z "$GROWL_NOTIFIER" ]] \
-  && GROWL_NOTIFIER="/usr/local/bin/growlnotify"
+    # Exit with 0 if inside a TMUX pane
+    function is-inside-tmux {
+        if [[ -z "$TMUX" ]]; then
+            return 1
+        else
+            return 0
+        fi
+    }
 
-[[ -z "$NOTIFY_NOTIFIER" ]] \
-  && NOTIFY_NOTIFIER=$(which notify-send)
+    # Find the TTY for the current shell.
+    function find-current-tty {
+        if is-inside-tmux; then
+          tmux display-message -p '#{client_tty}'
+        else
+          echo $TTY
+        fi
+    }
 
-if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
-  term_id='com.googlecode.iterm2'
-elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
-  term_id='com.apple.terminal'
-elif [[ -x $(which xdotool) ]]; then
-  term_id='check_xdotool'
-else
-  # echo "Unsupported terminal: $TERM_PROGRAM" > /dev/stderr 
-  return 1;
-fi
+    # Get the active TMUX pane ID, comparable with $TMUX_PANE
+    function find-tmux-pane {
+        if is-inside-tmux; then
+            tmux list-windows -F '#{window_active} #{pane_id}' | grep -i '^1' | awk '{ print $2 }'
+        else
+            return 1
+        fi
+    }
 
-if [[ $term_id == 'com.googlecode.iterm2' ]]; then
-  TT='tell-iterm2'
-  if [[ `$TT <<< "frontmost and (tty of (current session of current terminal) is equal to \"$TTY\")"` == "true" ]]; then
-    return 2
-  fi
-elif [[ $term_id == 'com.apple.terminal' ]]; then
-  TT='tell-terminal'
-  if [[ `$TT <<<frontmost` == "true" && `$TT -tab <<<selected` == "true" ]]; then
-    return 2
-  fi
-elif [[ $term_id == 'check_xdotool' ]]; then
-  ACTIVE_WID=$(xdotool getactivewindow)
-  if [[ -z "$TMUX" ]]; then
-    if [[ "$ACTIVE_WID" == "$WINDOWID" ]]; then
-      return 2
-    fi
-  else
-    ACTIVE_PANE=$(tmux list-windows -F '#{window_active} #{pane_id}' | grep -i '1' | awk '{ print $2 }')
-    if [[ ("$TMUX_PANE" == "$ACTIVE_PANE") && ("$ACTIVE_WID" == "$WINDOWID") ]]; then
-       return 2
-    fi
-  fi
-else
-  # shouldn't actually get up to here
-  return 2
-fi
+    # Exit with 0 if given TMUX pane is the active one.
+    function is-tmux-pane-active {
+        local pane
+        pane=$1
 
-#cat /dev/stdin | growlnotify "$@"
-# growlnotify "$@" < /dev/stdin
+        if [[ "$TMUX_PANE" == "$pane" ]]; then
+            return 0
+        fi
 
+        return 1
+    }
 
-if [[ -x "$SYS_NOTIFIER" ]]; then
-  "$SYS_NOTIFIER" -activate "$term_id" -sender "$term_id" -title "$title" -message "$message" 1>/dev/null 
-elif [[ -x "$GROWL_NOTIFIER" ]]; then
-  [[ ! -z "$icon" ]] && icon_switch="--iconpath $icon"
-  echo "$message" | "$GROWL_NOTIFIER" "$title" 
-elif [[ -x "$NOTIFY_NOTIFIER" ]]; then
-  "$NOTIFY_NOTIFIER" "$title" "$message"
-  if (( $+commands[wmctrl] )); then
-    if [[ $ZSH_NOTIFY_FOCUS_TERMINAL == "true" ]]; then
-      wmctrl -ia $(wmctrl -lp | awk -vpid=$PPID_FIRST '$3==pid {print $1; exit}')
-    else
-      wmctrl -i -r $(wmctrl -lp | awk -vpid=$PPID_FIRST '$3==pid {print $1; exit}') -b add,demands_attention
-    fi
-  fi
-else
-  echo "No notifier program found." > /dev/stderr
-  return 1
-fi
+    # Exit with 0 if the terminal window/tab is active; exit with 1 if not, or
+    # if the terminal is
+    function is-terminal-window-active {
+        local term_id
+
+        term_id=$1
+
+        case "$term_id" in
+            "iterm2"|"iterm2-nightly"|"apple-terminal")
+                local current_tty resources_dir
+
+                zstyle -s ':notify:' resources-dir resources_dir
+                current_tty=$(find-current-tty)
+
+                if [[ "true" == $(osascript "$resources_dir"/is-"$term_id"-active.applescript "$current_tty") ]]; then
+                    return 0
+                fi
+            ;;
+            "xdotool")
+                local active_wid
+
+                active_wid=$(xdotool getactivewindow)
+
+                if [[ "$active_wid" == "$WINDOWID" ]]; then
+                    return 0
+                fi
+            ;;
+        esac
+        return 1
+    }
+
+    # Detect if the terminal application is in background, also accounting
+    # for TMUX if needed, exiting with status 1 if it's active.
+    function is-in-background {
+        local term_id
+
+        term_id=$1
+
+        if is-terminal-window-active "$term_id"; then
+            if is-inside-tmux; then
+                local tmux_pane
+
+                tmux_pane=$(find-tmux-pane)
+
+                if is-tmux-pane-active "$tmux_pane"; then
+                    return 1
+                else
+                    return 0
+                fi
+            fi
+            return 1
+        fi
+
+        return 0
+    }
+
+    function notifier {
+        local notification_title message type
+        local -A titles
+
+        titles=(error "#fail" success "#win")
+        type=$1
+        message=$(<&0)
+
+        zstyle -s ':notify:' "$type"-notification-title notification_title \
+            || notification_title="$titles[$type]"
+
+        function notifier-mac {
+            local app_id app_id_option
+
+            if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
+                app_id="com.googlecode.iterm2"
+            elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+                app_id="com.apple.terminal"
+            fi
+
+            if [[ ! -z "$app_id" ]]; then
+                app_id_option="-activate $app_id -sender $app_id"
+            fi
+
+            zstyle -s ':notify:' "$type"-icon icon
+
+            echo "$message" | terminal-notifier "$app_id_option" -appIcon "$icon" -title "$notification_title" 1>/dev/null
+
+            if zstyle -t ':notify:' activate-terminal; then
+                echo tell app id \"$app_id\" to activate | osascript 1>/dev/null
+            fi
+        }
+
+        function notifier-linux {
+            notify-send "$notification_title" "$message"
+
+            if which wmctrl > /dev/null 2>&1; then
+                local parent_pid
+
+                zstyle -s ':notify:' parent-pid parent_pid
+
+                if zstyle -t ':notify:' activate-terminal; then
+                    wmctrl -ia $(wmctrl -lp | awk -vpid=$parent_pid '$3==pid {print $1; exit}')
+                else
+                    wmctrl -i -r $(wmctrl -lp | awk -vpid=$parent_pid '$3==pid {print $1; exit}') -b add,demands_attention
+                fi
+            fi
+        }
+
+        if which terminal-notifier > /dev/null 2>&1; then
+            notifier-mac
+        elif which notify-send > /dev/null 2>&1; then
+            notifier-linux
+        else
+            echo "No notifier program found." >&2
+            return 1
+        fi
+    }
+
+    term_id=$(find-current-term-id) \
+        || return 1
+
+    is-in-background "$term_id" \
+        || return 2
+
+    zstyle -s ':notify:' notifier notifier \
+        || notifier=notifier
+
+    echo "$message" | "$notifier" "$type"
+} "$1"
 
