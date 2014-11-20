@@ -28,7 +28,7 @@ if [[ ! -x `which osascript` ]]; then
     return 1
 fi
 
-local tabvar term_running tab_found  delimcmd user_scpt ret
+local the_tty tabvar term_running tab_found  delimcmd user_scpt ret
 typeset -A delimvar
 zparseopts -D tab=tabvar d:=delimvar
 
@@ -59,9 +59,15 @@ fi
 user_scpt=`cat /dev/stdin`
 
 if [[ $tabvar == "-tab" ]]; then
+  if [[ -n ${TMUX+1} ]]; then
+    the_tty=`tmux display-message -p '#{client_tty}'`
+  else
+    the_tty=$TTY
+  fi;
+
   osascript <<OSA
-  tell app "iTerm" 
-    tell (sessions of tabs of terminal windows whose tty is "$TTY")
+  tell app "iTerm"
+    tell (sessions of tabs of terminal windows whose tty is "$the_tty")
       $user_scpt
     end
     $delimcmd
@@ -69,7 +75,7 @@ if [[ $tabvar == "-tab" ]]; then
 OSA
 else
   osascript <<OSA
-  tell app "iTerm" 
+  tell app "iTerm"
     $user_scpt
   end
   $delimcmd
