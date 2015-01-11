@@ -38,6 +38,8 @@ if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
   term_id='com.googlecode.iterm2'
 elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
   term_id='com.apple.terminal'
+elif [[ -x $(which xdotool) ]]; then
+  term_id='check_xdotool'
 else
   # echo "Unsupported terminal: $TERM_PROGRAM" > /dev/stderr 
   return 1;
@@ -48,9 +50,14 @@ if [[ $term_id == 'com.googlecode.iterm2' ]]; then
   if [[ `$TT <<< "frontmost and (tty of (current session of current terminal) is equal to \"$TTY\")"` == "true" ]]; then
     return 2
   fi
-else
+elif [[ $term_id == 'com.apple.terminal' ]]; then
   TT='tell-terminal'
   if [[ `$TT <<<frontmost` == "true" && `$TT -tab <<<selected` == "true" ]]; then
+    return 2
+  fi
+else
+  ACTIVEPID=$(xdotool getactivewindow getwindowpid)
+  if [[ "$ACTIVEPID" == "$PPID" ]]; then
     return 2
   fi
 fi
