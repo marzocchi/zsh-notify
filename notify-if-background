@@ -60,7 +60,7 @@ elif [[ $term_id == 'com.apple.terminal' ]]; then
   fi
 else
   ACTIVEPID=$(xdotool getactivewindow getwindowpid)
-  if [[ "$ACTIVEPID" == "$PPID" ]]; then
+  if [[ "$ACTIVEPID" == "$PPID_FIRST" ]]; then
     return 2
   fi
 fi

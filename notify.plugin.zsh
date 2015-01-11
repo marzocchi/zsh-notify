@@ -48,6 +48,10 @@ function store-command-stats() {
   start_time=`date "+%s"`
 }
 
+if [[ -z "$PPID_FIRST" ]]; then
+  export PPID_FIRST=$PPID
+fi
+
 autoload add-zsh-hook
 autoload -U tell-terminal
 autoload -U tell-iterm2
