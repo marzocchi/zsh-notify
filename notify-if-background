@@ -34,6 +34,9 @@ message=$(<&0)
 [[ -z "$GROWL_NOTIFIER" ]] \
   && GROWL_NOTIFIER="/usr/local/bin/growlnotify"
 
+[[ -z "$NOTIFY_NOTIFIER" ]] \
+  && NOTIFY_NOTIFIER=$(which notify-send)
+
 if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
   term_id='com.googlecode.iterm2'
 elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
@@ -71,6 +74,8 @@ if [[ -x "$SYS_NOTIFIER" ]]; then
 elif [[ -x "$GROWL_NOTIFIER" ]]; then
   [[ ! -z "$icon" ]] && icon_switch="--iconpath $icon"
   echo "$message" | "$GROWL_NOTIFIER" "$title" 
+elif [[ -x "$NOTIFY_NOTIFIER" ]]; then
+  "$NOTIFY_NOTIFIER" "$title" "$message"
 else
   echo "No notifier program found." > /dev/stderr
   return 1
