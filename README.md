@@ -4,15 +4,16 @@
 zsh-notify
 =======
 
-A plugin for the Z shell (on OS X) that posts desktop notifications when a
-command terminates with a non-zero exit status or when it took more than 30
-seconds to complete, if the terminal application is in the background (or the
-command's terminal tab is inactive).
+A plugin for the Z shell (on OS X and Linux) that posts desktop notifications
+when a command terminates with a non-zero exit status or when it took more than
+30 seconds to complete, if the terminal application is in the background (or
+the command's terminal tab is inactive).
 
 Requirements
 ---
 
-- Either Terminal.app or [iTerm2][iterm2].
+- Either Terminal.app or [iTerm2][iterm2] on OSX and any terminal emulator on
+  Linux should work.
 
 - [terminal-notifier.app][terminal-notifier] is required for posting to
   Mountain Lion's Notification Center
@@ -20,6 +21,7 @@ Requirements
 - [growlnotify][growlnotify] is required for posting to Growl in previous
   versions of Mac OS X.
 
+- notify-send (libnotify) and xdotool is required for Linux systems.
 Usage
 ---
 
