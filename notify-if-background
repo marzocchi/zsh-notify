@@ -58,11 +58,14 @@ elif [[ $term_id == 'com.apple.terminal' ]]; then
   if [[ `$TT <<<frontmost` == "true" && `$TT -tab <<<selected` == "true" ]]; then
     return 2
   fi
-else
+elif [[ $term_id == 'check_xdotool' ]]; then
   ACTIVEPID=$(xdotool getactivewindow getwindowpid)
   if [[ "$ACTIVEPID" == "$PPID_FIRST" ]]; then
     return 2
   fi
+else
+  # shouldn't actually get up to here
+  return 2
 fi
 
 #cat /dev/stdin | growlnotify "$@"
