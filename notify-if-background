@@ -34,10 +34,15 @@ message=$(<&0)
 [[ -z "$GROWL_NOTIFIER" ]] \
   && GROWL_NOTIFIER="/usr/local/bin/growlnotify"
 
+[[ -z "$NOTIFY_NOTIFIER" ]] \
+  && NOTIFY_NOTIFIER=$(which notify-send)
+
 if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
   term_id='com.googlecode.iterm2'
 elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
   term_id='com.apple.terminal'
+elif [[ -x $(which xdotool) ]]; then
+  term_id='check_xdotool'
 else
   # echo "Unsupported terminal: $TERM_PROGRAM" > /dev/stderr 
   return 1;
@@ -48,11 +53,19 @@ if [[ $term_id == 'com.googlecode.iterm2' ]]; then
   if [[ `$TT <<< "frontmost and (tty of (current session of current terminal) is equal to \"$TTY\")"` == "true" ]]; then
     return 2
   fi
-else
+elif [[ $term_id == 'com.apple.terminal' ]]; then
   TT='tell-terminal'
   if [[ `$TT <<<frontmost` == "true" && `$TT -tab <<<selected` == "true" ]]; then
     return 2
   fi
+elif [[ $term_id == 'check_xdotool' ]]; then
+  ACTIVEPID=$(xdotool getactivewindow getwindowpid)
+  if [[ "$ACTIVEPID" == "$PPID_FIRST" ]]; then
+    return 2
+  fi
+else
+  # shouldn't actually get up to here
+  return 2
 fi
 
 #cat /dev/stdin | growlnotify "$@"
@@ -64,6 +77,8 @@ if [[ -x "$SYS_NOTIFIER" ]]; then
 elif [[ -x "$GROWL_NOTIFIER" ]]; then
   [[ ! -z "$icon" ]] && icon_switch="--iconpath $icon"
   echo "$message" | "$GROWL_NOTIFIER" "$title" 
+elif [[ -x "$NOTIFY_NOTIFIER" ]]; then
+  "$NOTIFY_NOTIFIER" "$title" "$message"
 else
   echo "No notifier program found." > /dev/stderr
   return 1
