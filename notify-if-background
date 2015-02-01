@@ -43,7 +43,7 @@ else
   return 1;
 fi
 
-if [[ ${TMUX+1} ]]; then
+if [[ -n ${TMUX+1} ]]; then
   the_tty=`tmux display-message -p '#{client_tty}'`
 else
   the_tty=$TTY
