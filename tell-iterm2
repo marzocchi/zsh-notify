@@ -66,7 +66,7 @@ if [[ $tabvar == "-tab" ]]; then
   fi;
 
   osascript <<OSA
-  tell app "iTerm"
+  tell application id "com.googlecode.iterm2"
     tell (sessions of tabs of terminal windows whose tty is "$the_tty")
       $user_scpt
     end
@@ -75,7 +75,7 @@ if [[ $tabvar == "-tab" ]]; then
 OSA
 else
   osascript <<OSA
-  tell app "iTerm"
+  tell application id "com.googlecode.iterm2"
     $user_scpt
   end
   $delimcmd
