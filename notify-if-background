@@ -79,6 +79,9 @@ elif [[ -x "$GROWL_NOTIFIER" ]]; then
   echo "$message" | "$GROWL_NOTIFIER" "$title" 
 elif [[ -x "$NOTIFY_NOTIFIER" ]]; then
   "$NOTIFY_NOTIFIER" "$title" "$message"
+  if (( $+commands[wmctrl] )); then
+    wmctrl -ia $(wmctrl -lp | awk -vpid=$PPID_FIRST '$3==pid {print $1; exit}')
+  fi
 else
   echo "No notifier program found." > /dev/stderr
   return 1
