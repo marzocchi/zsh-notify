@@ -21,7 +21,11 @@ Requirements
 - [growlnotify][growlnotify] is required for posting to Growl in previous
   versions of Mac OS X.
 
-- notify-send (libnotify-bin) and xdotool are required for Linux systems. Wmctrl is optional and provides support for focusing the terminal in addition to a notification.
+- notify-send (libnotify-bin) and xdotool are required for Linux systems.
+  Wmctrl is optional and provides support for focusing the terminal in
+  addition to a notification.
+
+
 Usage
 ---
 
