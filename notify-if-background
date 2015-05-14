@@ -80,7 +80,12 @@ elif [[ -x "$GROWL_NOTIFIER" ]]; then
 elif [[ -x "$NOTIFY_NOTIFIER" ]]; then
   "$NOTIFY_NOTIFIER" "$title" "$message"
   if (( $+commands[wmctrl] )); then
-    wmctrl -ia $(wmctrl -lp | awk -vpid=$PPID_FIRST '$3==pid {print $1; exit}')
+    if [[ $ZSH_NOTIFY_FOCUS_TERMINAL == "true" ]]; then
+      wmctrl -ia $(wmctrl -lp | awk -vpid=$PPID_FIRST '$3==pid {print $1; exit}')
+    else
+      # xdotool set_window --urgency 1 $(xdotool search --onlyvisible --pid $PPID_FIRST 2>/dev/null | head -n 1)
+      wmctrl -i -r $(wmctrl -lp | awk -vpid=$PPID_FIRST '$3==pid {print $1; exit}') -b add,demands_attention
+    fi
   fi
 else
   echo "No notifier program found." > /dev/stderr

@@ -43,6 +43,10 @@ Also, the plugin assumes that both `terminal-notifier` and `growlnotify` are
 installed in `/usr/local/bin`. You can change these defaults by setting the
 `$SYS_NOTIFIER` or `$GROWL_NOTIFIER` environment variables.
 
+On Linux if you have wmctrl installed, then you can set the $ZSH_NOTIFY_FOCUS_TERMINAL
+enviroment variable to "true" to change focus to the terminal emulator window when a notification
+is posted. By default the terminal window will just demand attention.
+
 
 [growlnotify]: http://growl.info/extras.php/#growlnotify
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
