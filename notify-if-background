@@ -59,9 +59,16 @@ elif [[ $term_id == 'com.apple.terminal' ]]; then
     return 2
   fi
 elif [[ $term_id == 'check_xdotool' ]]; then
-  ACTIVEPID=$(xdotool getactivewindow getwindowpid)
-  if [[ "$ACTIVEPID" == "$PPID_FIRST" ]]; then
-    return 2
+  ACTIVE_WID=$(xdotool getactivewindow)
+  if [[ -z "$TMUX" ]]; then
+    if [[ "$ACTIVE_WID" == "$WINDOWID" ]]; then
+      return 2
+    fi
+  else
+    ACTIVE_PANE=$(tmux list-windows -F '#{window_active} #{pane_id}' | grep -i '1' | awk '{ print $2 }')
+    if [[ ("$TMUX_PANE" == "$ACTIVE_PANE") && ("$ACTIVE_WID" == "$WINDOWID") ]]; then
+       return 2
+    fi
   fi
 else
   # shouldn't actually get up to here
