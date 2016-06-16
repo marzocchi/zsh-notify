@@ -42,6 +42,8 @@ Use `zstyle` in your `~/.zshrc`.
         
         zstyle ':notify:*' error-icon "/path/to/error-icon.png"
         zstyle ':notify:*' success-icon "/path/to/success-icon.png"
+    
+    [Try this][dogefy.sh]. Wow.
 
 - Have the terminal come back to front when the notification is posted.
 
@@ -55,5 +57,5 @@ Use `zstyle` in your `~/.zshrc`.
 
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
 [iterm2]: http://www.iterm2.com/
-
+[dogefy.sh]: https://gist.github.com/marzocchi/14c47a49643389029a2026b4d4fec7ae
 
