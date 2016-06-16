@@ -1,54 +1,59 @@
-**Find a version that works with iTerm2's nightlies in the
-[“next-iterm” branch →](https://github.com/marzocchi/zsh-notify/tree/next-iterm)**
-
 zsh-notify
 =======
 
-A plugin for the Z shell (on OS X and Linux) that posts desktop notifications
-when a command terminates with a non-zero exit status or when it took more than
-30 seconds to complete, if the terminal application is in the background (or
-the command's terminal tab is inactive).
+A plugin for the Z shell that posts desktop notifications when a command terminates
+with a non-zero exit status or when it took more than 30 seconds to complete,
+if the terminal application is in the background (or the terminal tab is inactive).
 
-Requirements
+Supported terminals and requirements
 ---
 
-- Either Terminal.app or [iTerm2][iterm2] on OSX and any terminal emulator on
-  Linux should work.
-
-- [terminal-notifier.app][terminal-notifier] is required for posting to
-  Mountain Lion's Notification Center
-
-- [growlnotify][growlnotify] is required for posting to Growl in previous
-  versions of Mac OS X.
-
-- notify-send (libnotify-bin) and xdotool are required for Linux systems.
-  Wmctrl is optional and provides support for focusing the terminal in
-  addition to a notification.
-
+- On Mac OS X: Terminal.app or [iTerm2][iterm2];
+- On Linux (and possibly other systems): any terminal application should be supported
+  as `xdotool` and `wmctrl` are used to query and modify windows state.
+  
+When using the default notifier notifications are posted using
+[terminal-notifier.app][terminal-notifier] on Mac OS X and `notify-send`
+on other systems.
 
 Usage
 ---
 
 Just source notify.plugin.zsh.
 
-Configuration:
+Configuration
 ---
 
-While notifications about failed commands are always posted, notifications
-for successful commands are posted only if they took at least 30 seconds to
-complete. To change the timeout set the NOTIFY_COMMAND_COMPLETE_TIMEOUT
-environment variable to a different value in seconds.
+Use `zstyle` in your `~/.zshrc`.
 
-Also, the plugin assumes that both `terminal-notifier` and `growlnotify` are
-installed in `/usr/local/bin`. You can change these defaults by setting the
-`$SYS_NOTIFIER` or `$GROWL_NOTIFIER` environment variables.
+- Replace the built-in notifier with a custom one at `~/bin/my-notifier`. The custom
+  notifier will receive the notification type (`error` or `success`) as the first
+  argument, and the notification text (the command) as standard input.
 
-On Linux if you have wmctrl installed, then you can set the $ZSH_NOTIFY_FOCUS_TERMINAL
-enviroment variable to "true" to change focus to the terminal emulator window when a notification
-is posted. By default the terminal window will just demand attention.
+        zstyle ':notify:*' notifier ~/bin/my-notifier
 
+- Set a custom title for error and success notifications, when using the
+  built-in notifier.
 
-[growlnotify]: http://growl.info/extras.php/#growlnotify
+        zstyle ':notify:*' error-notification-title
+        zstyle ':notify:*' success-notification-title
+
+- Change the notifications icons for failure or success (any image path or URL should work):
+        
+        zstyle ':notify:*' error-icon "/path/to/error-icon.png"
+        zstyle ':notify:*' success-icon "/path/to/success-icon.png"
+
+- Have the terminal come back to front when the notification is posted.
+
+        zstyle ':notify:*' activate-terminal yes
+
+- Set a different timeout for notifications for successful commands
+  (notifications for failed commands are posted without accounting for
+  the time it took to complete).
+
+        zstyle ':notify:*' command-complete-timeout 15
+
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
 [iterm2]: http://www.iterm2.com/
+
 
