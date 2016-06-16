@@ -35,8 +35,8 @@ Use `zstyle` in your `~/.zshrc`.
 - Set a custom title for error and success notifications, when using the
   built-in notifier.
 
-        zstyle ':notify:*' error-notification-title
-        zstyle ':notify:*' success-notification-title
+        zstyle ':notify:*' error-title
+        zstyle ':notify:*' success-title
 
 - Change the notifications icons for failure or success (any image path or URL should work):
         

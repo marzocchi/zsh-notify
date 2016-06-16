@@ -138,7 +138,7 @@
         type=$1
         message=$(<&0)
 
-        zstyle -s ':notify:' "$type"-notification-title notification_title \
+        zstyle -s ':notify:' "$type"-title notification_title \
             || notification_title="$titles[$type]"
 
         function notifier-mac {
