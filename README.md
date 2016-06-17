@@ -16,6 +16,10 @@ When using the default notifier notifications are posted using
 [terminal-notifier.app][terminal-notifier] on Mac OS X and `notify-send`
 on other systems.
 
+When using Tmux on Yosemite, `reattach-to-user-namespace` is required to
+prevent terminal-notifier to hang (see [julienXX/terminal-notifier#115][issue115]
+for details).
+
 Usage
 ---
 
@@ -58,4 +62,4 @@ Use `zstyle` in your `~/.zshrc`.
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
 [iterm2]: http://www.iterm2.com/
 [dogefy.sh]: https://gist.github.com/marzocchi/14c47a49643389029a2026b4d4fec7ae
-
+[issue115]: https://github.com/julienXX/terminal-notifier/issues/115
