@@ -156,7 +156,7 @@
 
             zstyle -s ':notify:' "$type"-icon icon
 
-            echo "$message" | terminal-notifier "$app_id_option" -appIcon "$icon" -title "$notification_title" 1>/dev/null
+            echo "$message" | terminal-notifier ${=app_id_option} -appIcon "$icon" -title "$notification_title" 1>/dev/null
 
             if zstyle -t ':notify:' activate-terminal; then
                 echo tell app id \"$app_id\" to activate | osascript 1>/dev/null
