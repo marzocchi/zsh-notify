@@ -63,3 +63,22 @@ Use `zstyle` in your `~/.zshrc`.
 [iterm2]: http://www.iterm2.com/
 [dogefy.sh]: https://gist.github.com/marzocchi/14c47a49643389029a2026b4d4fec7ae
 [issue115]: https://github.com/julienXX/terminal-notifier/issues/115
+
+## Installation
+
+### [Antigen](https://github.com/zsh-users/antigen)
+
+Add `antigen bundle marzocchi/zsh-notify` to your `.zshrc` with your other bundle commands.
+
+Antigen will handle cloning the plugin for you automatically the next time you start zsh. You can also add the plugin to a running zsh with `antigen bundle marzocchi/zsh-notify` for testing before adding it to your `.zshrc`.
+
+### [Oh-My-Zsh](http://ohmyz.sh/)
+
+1. `cd ~/.oh-my-zsh/custom/plugins`
+2. `git clone git@github.com:marzocchi/zsh-notify.git`
+3. Add zsh-notify to your plugin list - edit `~.zshrc` and change `plugins=(...)` to `plugins=(... zsh-notify)`
+
+### [Zgen](https://github.com/tarjoilija/zgen)
+
+Add `zgen load marzocchi/zsh-notify` to your .zshrc file in the same function you're doing your other `zgen load` calls in.
+
