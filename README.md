@@ -50,7 +50,7 @@ Use `zstyle` in your `~/.zshrc`.
     [Try this][dogefy.sh]. Wow.
 
 - Set a sound for error and success notifications, when usign the built-in notifier.
-  This feature currently works on Mac only.
+  On Linux you should specify path to audio file.
 
         zstyle ':notify:*' error-sound "Glass"
         zstyle ':notify:*' success-sound "default"

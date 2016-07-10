@@ -172,6 +172,15 @@
         function notifier-linux {
             notify-send "$notification_title" "$message"
 
+            if [[ ! -z "$notification_sound" ]]; then
+                if [[ -a $notification_sound ]]; then
+                    local player=`(which paplay || which aplay || which ossplay) | tail -n 1`
+                    eval $player $notification_sound
+                else
+                    echo "zsh-notify: file $notification_sound not found."
+                fi
+            fi
+
             if which wmctrl > /dev/null 2>&1; then
                 local parent_pid
 
