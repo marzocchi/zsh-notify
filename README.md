@@ -49,6 +49,12 @@ Use `zstyle` in your `~/.zshrc`.
     
     [Try this][dogefy.sh]. Wow.
 
+- Set a sound for error and success notifications, when usign the built-in notifier.
+  On Linux you should specify path to audio file.
+
+        zstyle ':notify:*' error-sound "Glass"
+        zstyle ':notify:*' success-sound "default"
+
 - Have the terminal come back to front when the notification is posted.
 
         zstyle ':notify:*' activate-terminal yes

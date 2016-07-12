@@ -141,8 +141,10 @@
         zstyle -s ':notify:' "$type"-title notification_title \
             || notification_title="$titles[$type]"
 
+        zstyle -s ':notify:' "$type"-sound notification_sound
+
         function notifier-mac {
-            local app_id app_id_option
+            local app_id app_id_option sound_option
 
             if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
                 app_id="com.googlecode.iterm2"
@@ -154,9 +156,13 @@
                 app_id_option="-activate $app_id -sender $app_id"
             fi
 
+            if [[ ! -z "$notification_sound" ]]; then
+                sound_option="-sound $notification_sound"
+            fi
+
             zstyle -s ':notify:' "$type"-icon icon
 
-            echo "$message" | terminal-notifier ${=app_id_option} -appIcon "$icon" -title "$notification_title" 1>/dev/null
+            echo "$message" | terminal-notifier ${=app_id_option} ${=sound_option} -appIcon "$icon" -title "$notification_title" 1>/dev/null
 
             if zstyle -t ':notify:' activate-terminal; then
                 echo tell app id \"$app_id\" to activate | osascript 1>/dev/null
@@ -165,6 +171,27 @@
 
         function notifier-linux {
             notify-send "$notification_title" "$message"
+
+            function play-sound {
+              if which paplay > /dev/null 2>&1; then
+                paplay "$1"
+              elif which aplay > /dev/null 2>&1; then
+                aplay "$1"
+              elif which ossplay > /dev/null 2>&1; then
+                ossplay "$1"
+              else
+                echo "Could not find a sound file player." >&2
+                return 1
+              fi
+            }
+
+            if [[ ! -z "$notification_sound" ]]; then
+                if [[ -a "$notification_sound" ]]; then
+                    play-sound "$notification_sound"
+                else
+                    echo "File $notification_sound not found." >&2
+                fi
+            fi
 
             if which wmctrl > /dev/null 2>&1; then
                 local parent_pid
