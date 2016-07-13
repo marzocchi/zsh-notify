@@ -42,7 +42,7 @@ Use `zstyle` in your `~/.zshrc`.
         zstyle ':notify:*' error-title
         zstyle ':notify:*' success-title
 
-- Change the notifications icons for failure or success (any image path or URL should work):
+- Change the notifications icons for failure or success. Any image path or URL (Mac OS only) should work.
         
         zstyle ':notify:*' error-icon "/path/to/error-icon.png"
         zstyle ':notify:*' success-icon "/path/to/success-icon.png"
