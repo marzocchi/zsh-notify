@@ -142,6 +142,7 @@
             || notification_title="$titles[$type]"
 
         zstyle -s ':notify:' "$type"-sound notification_sound
+        zstyle -s ':notify:' "$type"-icon icon
 
         function notifier-mac {
             local app_id app_id_option sound_option
@@ -160,8 +161,6 @@
                 sound_option="-sound $notification_sound"
             fi
 
-            zstyle -s ':notify:' "$type"-icon icon
-
             echo "$message" | terminal-notifier ${=app_id_option} ${=sound_option} -appIcon "$icon" -title "$notification_title" 1>/dev/null
 
             if zstyle -t ':notify:' activate-terminal; then
@@ -170,7 +169,7 @@
         }
 
         function notifier-linux {
-            notify-send "$notification_title" "$message"
+            notify-send -i "$icon" "$notification_title" "$message"
 
             function play-sound {
               if which paplay > /dev/null 2>&1; then
