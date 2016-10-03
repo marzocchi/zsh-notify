@@ -44,7 +44,6 @@ function notify-command-complete() {
 
 function store-command-stats() {
     last_command=$1
-    last_command_name=${1[(wr)^(*=*|sudo|ssh|-*)]}
     start_time=`date "+%s"`
 }
 
