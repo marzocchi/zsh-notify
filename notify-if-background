@@ -154,7 +154,7 @@
             fi
 
             if [[ ! -z "$app_id" ]]; then
-                app_id_option="-activate $app_id -sender $app_id"
+                app_id_option="-activate $app_id"
             fi
 
             if [[ ! -z "$notification_sound" ]]; then
