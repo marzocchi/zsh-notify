@@ -28,7 +28,7 @@
             fi
         elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
             echo apple-terminal
-        elif which xdotool > /dev/null 2>&1; then
+        elif which xdotool > /dev/null 2>&1 && [[ "$DISPLAY" != '' ]]; then
             echo xdotool
         else
             return 1
