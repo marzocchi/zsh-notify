@@ -5,6 +5,8 @@ A plugin for the Z shell that posts desktop notifications when a command termina
 with a non-zero exit status or when it took more than 30 seconds to complete,
 if the terminal application is in the background (or the terminal tab is inactive).
 
+[![git-brag-stats](https://labs.turbo.run/git-brag?user=marzocchi&repo=zsh-notify)](https://github.com/turbo/git-brag)
+
 Supported terminals and requirements
 ---
 
