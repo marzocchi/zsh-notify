@@ -9,7 +9,7 @@ Supported terminals and requirements
 ---
 
 - On Mac OS X: Terminal.app or [iTerm2][iterm2];
-- On Linux (and possibly other systems): any terminal application should be supported
+- On Linux (and possibly other systems): any terminal application that sets the `$WINDOWID` variable should be supported
   as `xdotool` and `wmctrl` are used to query and modify windows state.
   
 When using the default notifier notifications are posted using
