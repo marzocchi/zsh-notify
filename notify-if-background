@@ -199,7 +199,7 @@
 
                 if zstyle -t ':notify:' activate-terminal; then
                     wmctrl -ia $(wmctrl -lp | awk -vpid=$parent_pid '$3==pid {print $1; exit}')
-                else
+                elif ! (zstyle -t ':notify:' disable-urgent); then
                     wmctrl -i -r $(wmctrl -lp | awk -vpid=$parent_pid '$3==pid {print $1; exit}') -b add,demands_attention
                 fi
             fi

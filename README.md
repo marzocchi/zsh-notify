@@ -59,6 +59,10 @@ Use `zstyle` in your `~/.zshrc`.
 
         zstyle ':notify:*' activate-terminal yes
 
+- Disable setting the urgency hint for the terminal when the notification is posted (Linux only).
+
+        zstyle ':notify:*' disable-urgent yes
+
 - Set a different timeout for notifications for successful commands
   (notifications for failed commands are posted without accounting for
   the time it took to complete).
