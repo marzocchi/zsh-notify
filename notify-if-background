@@ -161,7 +161,7 @@
                 sound_option="-sound $notification_sound"
             fi
 
-            echo "$message" | terminal-notifier ${=app_id_option} ${=sound_option} -appIcon "$icon" -title "$notification_title" 1>/dev/null
+            echo "$message" | terminal-notifier ${=app_id_option} ${=sound_option} -appIcon "$icon" -title "$notification_title" > /dev/null 2>&1
 
             if zstyle -t ':notify:' activate-terminal; then
                 echo tell app id \"$app_id\" to activate | osascript 1>/dev/null
