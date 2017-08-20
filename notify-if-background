@@ -8,6 +8,7 @@
     local term_id type message notifier
 
     type=$1
+    time_elapsed="$2"
     message=$(<&0)
 
     # Find a "term_id", a string that will be used later to dispatch different
@@ -92,7 +93,6 @@
 
                 zstyle -s ':notify:' window-pid wid \
                     || zstyle -s ':notify:' parent-pid wid
-
   
                 if [[ "$active_wid" == "$wid" ]]; then
                     return 0
@@ -127,16 +127,36 @@
         return 0
     }
 
+
     function notifier {
         local notification_title message type
         local -A titles
+        local -A vars
 
         titles=(error "#fail" success "#win")
         type=$1
+        time_elapsed=$2
+        vars=(time_elapsed "$time_elapsed")
+
         message=$(<&0)
+
+        function replace_vars {
+          local text
+
+          text="$1"
+
+          for k in "${(@k)vars}"; do
+            v=$vars[$k]
+            text=$(echo "$text" | sed "s/#{$k}/$v/" )
+          done
+
+          echo $text
+        }
 
         zstyle -s ':notify:' "$type"-title notification_title \
             || notification_title="$titles[$type]"
+
+        notification_title=$(replace_vars "$notification_title")
 
         zstyle -s ':notify:' "$type"-sound notification_sound
         zstyle -s ':notify:' "$type"-icon icon
@@ -212,8 +232,8 @@
         fi
     }
 
-      zstyle -s ':notify:' error-log error_log \
-          || error_log=/dev/stderr
+    zstyle -s ':notify:' error-log error_log \
+      || error_log=/dev/stderr
 
     (
       term_id=$(find-current-term-id) \
@@ -225,8 +245,7 @@
       zstyle -s ':notify:' notifier notifier \
           || notifier=notifier
 
-      echo "$message" | "$notifier" "$type"
+      echo "$message" | "$notifier" "$type" "$time_elapsed"
     ) 2> "$error_log"
 
-} "$1"
-
+} "$1" "$2"

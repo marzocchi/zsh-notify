@@ -13,36 +13,42 @@ zstyle ':notify:*' parent-pid $_ZSH_NOTIFY_ROOT_PPID
 # Notify an error with no regard to the time elapsed (but always only
 # when the terminal is in background).
 function notify-error {
-    notify-if-background error < /dev/stdin &!
+    local time_elapsed 
+    time_elapsed=$1
+    notify-if-background error "$time_elapsed" < /dev/stdin &!
 }
 
 # Notify of successful command termination, but only if it took at least
 # 30 seconds (and if the terminal is in background).
 function notify-success() {
-    local now diff start_time last_command command_complete_timeout
+    local time_elapsed command_complete_timeout
 
-    start_time=$1
-    last_command="$2"
-    now=`date "+%s"`
+    time_elapsed=$1
 
     zstyle -s ':notify:' command-complete-timeout command_complete_timeout \
         || command_complete_timeout=30
 
-    ((diff = $now - $start_time ))
-    if (( $diff > $command_complete_timeout )); then
-        notify-if-background success <<< "$last_command" &!
+    if (( $time_elapsed > $command_complete_timeout )); then
+        notify-if-background success "$time_elapsed" < /dev/stdin &!
     fi
 }
 
 # Notify about the last command's success or failure.
 function notify-command-complete() {
     last_status=$?
-    if [[ $last_status -gt "0" ]]; then
-        notify-error <<< $last_command
-    elif [[ -n $start_time ]]; then
-        notify-success "$start_time" "$last_command"
+
+    local now time_elapsed
+
+    if [[ -n $start_time ]]; then
+      now=`date "+%s"`
+      ((time_elapsed = $now - $start_time ))
+      if [[ $last_status -gt "0" ]]; then
+          notify-error "$time_elapsed" <<< $last_command
+      elif [[ -n $start_time ]]; then
+          notify-success "$time_elapsed" <<< $last_command
+      fi
     fi
-    unset last_command start_time last_status
+    unset last_command last_status start_time
 }
 
 function store-command-stats() {
