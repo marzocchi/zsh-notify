@@ -95,7 +95,7 @@
             "xdotool")
                 local active_wid
 
-                active_wid=$(xdotool getactivewindow)
+                active_wid=$(xdotool getactivewindow 2> /dev/null)
 
                 if [[ "$active_wid" == "$WINDOWID" ]]; then
                     return 0
