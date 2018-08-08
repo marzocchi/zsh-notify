@@ -69,6 +69,10 @@ Use `zstyle` in your `~/.zshrc`.
 
         zstyle ':notify:*' command-complete-timeout 15
 
+- Disable error reporting (or send it somewhere else)
+
+        zstyle ':notify:*' error-log /dev/null
+
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
 [iterm2]: http://www.iterm2.com/
 [dogefy.sh]: https://gist.github.com/marzocchi/14c47a49643389029a2026b4d4fec7ae

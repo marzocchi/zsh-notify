@@ -215,15 +215,21 @@
         fi
     }
 
-    term_id=$(find-current-term-id) \
-        || return 1
+      zstyle -s ':notify:' error-log error_log \
+          || error_log=/dev/stderr
 
-    is-in-background "$term_id" \
-        || return 2
+    (
+      term_id=$(find-current-term-id) \
+          || return 1
 
-    zstyle -s ':notify:' notifier notifier \
-        || notifier=notifier
+      is-in-background "$term_id" \
+          || return 2
 
-    echo "$message" | "$notifier" "$type"
+      zstyle -s ':notify:' notifier notifier \
+          || notifier=notifier
+
+      echo "$message" | "$notifier" "$type"
+    ) 2> "$error_log"
+
 } "$1"
 
