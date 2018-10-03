@@ -10,7 +10,7 @@ zstyle ':notify:*' parent-pid $PPID
 # Notify an error with no regard to the time elapsed (but always only
 # when the terminal is in background).
 function notify-error {
-    notify-if-background error < /dev/stdin &!
+    notify-if-background error
 }
 
 # Notify of successful command termination, but only if it took at least
