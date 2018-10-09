@@ -18,14 +18,7 @@
         zstyle -s ':notify:' resources-dir resources_dir
 
         if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
-            # Try to detect recent iTerm2 builds that use the different AS
-            # dictionary by running a script that will fail in newer but
-            # succeed in older versions.
-            if osascript "$resources_dir"/fails-on-iterm-nightly.applescript 2>/dev/null; then
-                echo iterm2
-            else
-                echo iterm2-nightly
-            fi
+            echo iterm2
         elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
             echo apple-terminal
         elif [[ "$DISPLAY" != '' ]] && which xdotool > /dev/null 2>&1; then
@@ -82,7 +75,7 @@
         term_id=$1
 
         case "$term_id" in
-            "iterm2"|"iterm2-nightly"|"apple-terminal")
+            "iterm2"|"apple-terminal")
                 local current_tty resources_dir
 
                 zstyle -s ':notify:' resources-dir resources_dir
