@@ -7,8 +7,14 @@
 () {
     local term_id type message notifier
 
+    format-time() {
+      t="$1"
+      zmodload -e zsh/datetime || zmodload zsh/datetime
+      TZ=UTC strftime "%H:%M:%S" "$t"
+    }
+
     type=$1
-    time_elapsed="$2"
+    time_elapsed=$(format-time "$2")
     message=$(<&0)
 
     # Find a "term_id", a string that will be used later to dispatch different
