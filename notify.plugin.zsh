@@ -17,6 +17,9 @@ zstyle ':notify:*' plugin-dir "$plugin_dir"
 zstyle ':notify:*' command-complete-timeout 30
 zstyle ':notify:*' error-log /dev/stderr
 zstyle ':notify:*' notifier zsh-notify
+zstyle ':notify:*' expire-time ''
+zstyle ':notify:*' app-name 'zsh'
+zstyle ':notify:*' notifier zsh-notify
 zstyle ':notify:*' success-title '#win (in #{time_elapsed})'
 zstyle ':notify:*' success-sound ''
 zstyle ':notify:*' success-icon ''

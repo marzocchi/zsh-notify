@@ -88,6 +88,20 @@ sourcing `notify.plugin.zsh`.
 
    The default value is 30 seconds.
 
+- Set application name in notification
+  (only notify-send).
+
+        zstyle ':notify:*' app-name sh
+
+   The default value is zsh.
+
+- Set a expire time in notifications
+  (only notify-send).
+
+        zstyle ':notify:*' expire-time 2500
+
+   The default value is undefined milliseconds (disabled).
+
 - Replace the built-in notifier with a custom one at `~/bin/my-notifier`. The
   custom notifier will receive the notification type (`error` or `success`) as
   the first argument, the time elapsed as the second argument, and the
