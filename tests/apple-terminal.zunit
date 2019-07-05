@@ -1,0 +1,66 @@
+#!/usr/bin/env zunit
+
+@setup {
+  load ../notify.plugin.zsh
+
+  if [[ "$TERM_PROGRAM" != "Apple_Terminal" ]]; then
+    skip 'this test must be run in Apple Terminal'
+  fi
+}
+
+@teardown {
+  if [[ "$TERM_PROGRAM" != "Apple_Terminal" ]]; then
+    return
+  fi
+
+  osascript <<SCPT
+tell app id "com.apple.terminal"
+  activate
+end 
+SCPT
+}
+
+@test 'Apple Terminal: is-terminal-active - yes' {
+  osascript <<SCPT
+tell app id "com.apple.terminal"
+  activate
+end 
+SCPT
+
+  run is-terminal-active
+  assert $state equals 0
+}
+
+@test 'Apple Terminal: is-terminal-active - app in background' {
+  osascript <<SCPT
+tell app "System Events"
+    tell item 1 of (application processes whose bundle identifier is "com.apple.terminal")
+      set visible to false
+    end tell
+end tell
+SCPT
+
+  run is-terminal-active
+  assert $state equals 1
+}
+
+@test 'Apple Terminal: is-terminal-active - other tab active' {
+  osascript <<SCPT
+tell app "System Events"
+    tell item 1 of (application processes whose bundle identifier is "com.apple.terminal")
+      set frontmost to true
+    end tell
+
+    keystroke "t" using command down
+end tell
+SCPT
+
+  run is-terminal-active
+  assert $state equals 1
+
+  osascript <<SCPT
+tell application "System Events" to keystroke "d" using control down
+delay 1
+tell application "System Events" to keystroke "w" using command down
+SCPT
+}

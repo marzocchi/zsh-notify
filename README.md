@@ -1,33 +1,35 @@
 zsh-notify
-=======
+===
 
-Desktop notifications for long running commands in ZSH.
+Desktop notifications for long-running commands in ZSH.
 
 Supported terminals and requirements
 ---
 
-- On Mac OS X: Terminal.app or [iTerm2][iterm2];
+- On macOS: Terminal.app or [iTerm2][iterm2];
 - On Linux (and possibly other systems): any terminal application should be
   supported as `xdotool` and `wmctrl` are used to query and modify windows
   state.
   
-When using the default notifier notifications are posted using
-[terminal-notifier.app][terminal-notifier] on Mac OS X and `notify-send` on
-other systems.
+When using the default configuration, notifications are posted using
+[terminal-notifier.app][terminal-notifier] on macOS and `notify-send` on
+other systems; usage of custom notifier is described in [Configuration](#configuration).
 
 When using Tmux on Yosemite, `reattach-to-user-namespace` is required to
 prevent terminal-notifier to hang (see
 [julienXX/terminal-notifier#115][issue115] for details).
 
-Usage
+Installation and usage
 ---
 
-Just source notify.plugin.zsh.
+Just clone this repository and source `notify.plugin.zsh` in your `~/.zshrc`,
+or see below for instructions on installing with some popular package managers.
 
 Configuration
 ---
 
-Use `zstyle` in your `~/.zshrc`.
+The behavior of zsh-notify can be modified by using `zstyle` **after**
+sourcing `notify.plugin.zsh`.
 
 - Set a custom title for error and success notifications, when using the
   built-in notifier.
@@ -40,16 +42,17 @@ Use `zstyle` in your `~/.zshrc`.
         zstyle ':notify:*' error-title "Command failed (in #{time_elapsed} seconds)"
         zstyle ':notify:*' success-title "Command finished (in #{time_elapsed} seconds)"
 
-- Change the notifications icons for failure or success. Any image path or URL
-  (Mac OS only) should work.
+- Change the notifications icons for failure or success. Provide the path to an
+  image, or an URL if you are on macOS.
         
         zstyle ':notify:*' error-icon "/path/to/error-icon.png"
         zstyle ':notify:*' success-icon "/path/to/success-icon.png"
     
     [Try this][dogefy.sh]. Wow.
 
-- Set a sound for error and success notifications, when using the built-in
-  notifier. On Linux you should specify the path to an audio file.
+- Play sounds with error and success notifications when using the built-in
+  notifier. Provide the path to an audio file, or the name of an "alert" sound
+  if you are on macOS.
 
         zstyle ':notify:*' error-sound "Glass"
         zstyle ':notify:*' success-sound "default"
@@ -84,7 +87,7 @@ Use `zstyle` in your `~/.zshrc`.
 [dogefy.sh]: https://gist.github.com/marzocchi/14c47a49643389029a2026b4d4fec7ae
 [issue115]: https://github.com/julienXX/terminal-notifier/issues/115
 
-## Installation
+## Installation with package managers
 
 ### [Antigen](https://github.com/zsh-users/antigen)
 

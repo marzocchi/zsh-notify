@@ -1,0 +1,36 @@
+stdin_file="$(mktemp)"
+args_file="$(mktemp)"
+
+function get-stdin {
+    # @wtf for unknown reasons this or the other cat in get-args return
+    # an empty string sometimes; a second attempt to read mitigates this.
+    v="$(cat "$stdin_file")"
+
+    if [[ -z "$v" ]]; then
+        v="$(cat "$stdin_file")"
+    fi
+    
+    echo "$v"
+}
+
+function get-args {
+    v="$(cat "$args_file")"
+
+    # @wtf for unknown reasons this or the other cat in get-stdin return
+    # an empty string sometimes; a second attempt to read mitigates this.
+    if [[ -z "$v" ]]; then
+        v="$(cat "$args_file")"
+    fi
+
+    echo "$v"
+}
+
+function terminal-notifier {
+    cat > "$stdin_file"
+    echo "$@" > "$args_file"
+}
+
+function notify-send {
+    cat > "$stdin_file"
+    echo "$@" > "$args_file"
+}

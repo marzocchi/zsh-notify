@@ -1,0 +1,69 @@
+# vim: set nowrap filetype=zsh:
+#
+# Functions shared by the mac and linux implementations.
+
+# Exit with 0 if inside a TMUX pane
+function is-inside-tmux {
+    [[ "$TMUX" != "" ]]
+}
+
+# Find the TTY for the current shell, also accounting for TMUX.
+function current-tty {
+    if is-inside-tmux; then
+        tmux display-message -p '#{client_tty}'
+    else
+        echo $TTY
+    fi
+}
+
+# Exit with 0 if given TMUX pane is the active one.
+function is-current-tmux-pane-active {
+    is-inside-tmux || return 1
+
+    local active_pane_id=$(tmux list-windows -F '#{window_active} #{pane_id}' | grep -i '^1' | awk '{ print $2 }')
+
+    if [[ "$TMUX_PANE" == "$active_pane_id" ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+# Retrieve the title template from zstyle by type from first argument (one of 'success' or 'error')
+# and replace every #{placeholder} from key/value pairs passed in the rest of arguments
+function notification-title {
+    local type title k v
+
+    type="$1"
+    shift
+
+    zstyle -s ':notify:' "$type"-title title 
+
+    while [[ $# -gt 0 ]]; do
+      k="$1"
+      v="$2"
+      title=$(echo $title | sed "s/#{$k}/$v/")
+      shift
+      shift
+    done
+
+    echo $title
+}
+
+# format-time takes a number of seconds as first argument and format it
+# as Xs, XX:XX or XX:XX:XX
+function format-time() {
+    local format t
+    t="$1"
+
+    if [[ "$t" -lt 60 ]]; then
+        format="%ss"
+    elif [[ "$t" -lt 3600 ]]; then
+        format="%M:%S"
+    else
+        format="%H:%M:%S"
+    fi
+
+    zmodload -e zsh/datetime || zmodload zsh/datetime
+    TZ=UTC strftime "$format" "$t"
+}
