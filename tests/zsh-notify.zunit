@@ -1,0 +1,84 @@
+#!/usr/bin/env zunit
+
+@setup {
+  PATH="/bin:/usr/bin:/usr/local/bin"
+  load ../notify.plugin.zsh
+  load _support/functions
+}
+
+@teardown {
+}
+
+@test 'zsh-notify - terminal-notifier in Apple Terminal' {
+  if [[ "$TERM_PROGRAM" != "Apple_Terminal" ]]; then
+    skip 'must be run in Apple Terminal'
+  fi
+   
+  run zsh-notify success 3  <<<"notification text" 
+  assert $state equals 0
+  assert "$(get-args)" same_as "-activate com.apple.terminal -title #win (in 3s)"
+  assert "$(get-stdin)" same_as "notification text"
+}
+
+@test 'zsh-notify - terminal-notifier in Apple Terminal with icon' {
+  if [[ "$TERM_PROGRAM" != "Apple_Terminal" ]]; then
+    skip 'must be run in Apple Terminal'
+  fi
+
+  zstyle ':notify:*' success-icon custom.gif
+   
+  run zsh-notify success 3  <<<"notification text" 
+  assert $state equals 0
+  assert "$(get-args)" same_as "-activate com.apple.terminal -appIcon custom.gif -title #win (in 3s)"
+  assert "$(get-stdin)" same_as "notification text"
+}
+
+
+@test 'zsh-notify - terminal-notifier in iTerm2' {
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+    skip 'must be run in iTerm2'
+  fi
+   
+  run zsh-notify success 3  <<<"notification text" 
+  assert $state equals 0
+
+  run get-args
+  assert $state equals 0
+  assert "$output" same_as "-activate com.googlecode.iterm2 -title #win (in 3s)"
+
+  run get-stdin
+  assert $state equals 0
+  assert "$output" same_as "notification text"
+}
+
+@test 'zsh-notify - terminal-notifier in iTerm2 with icon' {
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+    skip 'must be run in iTerm2'
+  fi
+
+  zstyle ':notify:*' success-icon custom.gif
+   
+  run zsh-notify success 3  <<<"notification text" 
+  assert $state equals 0
+
+  run get-args
+  assert $state equals 0
+  assert "$output" same_as "-activate com.googlecode.iterm2 -appIcon custom.gif -title #win (in 3s)"
+
+  run get-stdin
+  assert $state equals 0
+  assert "$output" same_as "notification text"
+}
+
+@test 'zsh-notify - notify-send' {
+  zstyle -s ':notify:' impl impl
+
+  if [[ "$impl" != "xdotool" ]]; then
+    skip 'must be run on linux'
+  fi
+   
+  run zsh-notify success 3  <<<"notification text" 
+  assert $state equals 0
+  assert "$(get-args)" same_as "#win (in 3s) notification text"
+  assert "$(get-stdin)" same_as ""
+}

@@ -1,0 +1,91 @@
+#!/usr/bin/env zunit
+
+@setup {
+  load ../lib
+}
+
+@test 'format-time - seconds' {
+  run format-time 3
+
+  assert $state equals 0
+  assert "$output" same_as "3s"
+}
+
+@test 'format-time - minutes' {
+  run format-time 63
+
+  assert $state equals 0
+  assert "$output" same_as "01:03"
+}
+
+@test 'format-time - hours' {
+  run format-time 3703
+
+  assert $state equals 0
+  assert "$output" same_as "01:01:43"
+}
+
+@test 'notification-title - success' {
+  zstyle ':notify:*' success-title 'title for success notification' 
+
+  run notification-title success
+
+  assert $state equals 0
+  assert "$output" same_as "title for success notification"
+}
+
+@test 'notification-title - error' {
+  zstyle ':notify:*' error-title 'title for error notification' 
+
+  run notification-title error
+
+  assert $state equals 0
+  assert "$output" same_as "title for error notification"
+}
+
+@test 'notification-title - with vars' {
+  zstyle ':notify:*' success-title 'hello #{var1}' 
+
+  run notification-title success var1 'world'
+
+  assert $state equals 0
+  assert "$output" same_as "hello world"
+}
+
+@test 'notification-title - vars without value' {
+  zstyle ':notify:*' success-title 'hello #{var1}' 
+
+  run notification-title success 
+
+  assert $state equals 0
+  assert "$output" same_as "hello #{var1}"
+}
+
+@test 'is-inside-tmux' {
+  if [[ "$TMUX" != "" ]]; then
+    skip 'must NOT be run inside TMUX'
+  fi
+
+  run is-inside-tmux
+  assert $state equals 1
+}
+
+@test 'current-tty' {
+  if [[ "$TMUX" != "" ]]; then
+    skip 'must NOT be run inside TMUX'
+  fi
+
+  run current-tty
+  assert $state equals 0
+  assert "$output" same_as $TTY
+}
+
+@test 'is-current-tmux-pane-active' {
+  if [[ "$TMUX" != "" ]]; then
+    skip 'must NOT be run inside TMUX'
+  fi
+
+  run is-current-tmux-pane-active
+  assert $state equals 1
+}
+

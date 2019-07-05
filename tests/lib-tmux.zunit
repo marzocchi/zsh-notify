@@ -1,0 +1,49 @@
+#!/usr/bin/env zunit
+
+@setup {
+  if [[ "$TMUX" == "" ]]; then
+    skip 'must be run inside TMUX'
+  fi
+
+  load ../lib
+}
+
+@test 'tmux: is-inside-tmux' {
+  run is-inside-tmux
+
+  assert $state equals 0
+}
+
+@test 'tmux: current-tty - reports client TTY' {
+  expected_tty=$(tmux display-message -p '#{client_tty}')
+
+  run current-tty 
+
+  assert $state equals 0
+  assert "$output" same_as "$expected_tty"
+}
+
+@test 'tmux: is-current-tmux-pane-active' {
+  run is-current-tmux-pane-active
+  assert $state equals 0
+}
+
+@test 'tmux: is-current-tmux-pane-active - with other tab active' {
+  tmux new-window
+
+  run is-current-tmux-pane-active
+
+  tmux kill-window
+
+  assert $state equals 1
+}
+
+@test 'tmux: is-current-tmux-pane-active - with split' {
+  tmux split-window
+
+  run is-current-tmux-pane-active
+
+  tmux kill-pane
+
+  assert $state equals 1
+}

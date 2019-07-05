@@ -1,0 +1,34 @@
+# vim: set nowrap filetype=zsh:
+#
+# is-terminal-active checks if the current window (identified by the window-id
+# stored in zstyle) is active, and exits with 1 if not; it does support TMUX,
+# but doesn't support tabs.
+() {
+    local plugin_dir
+
+    zstyle -s ':notify:' plugin-dir plugin_dir
+    source $plugin_dir/lib
+
+    function is-terminal-window-active {
+        local active_wid wid
+
+        active_wid=$(xdotool getactivewindow)
+
+        zstyle -s ':notify:' window-id wid
+
+        if [[ "$active_wid" == "$wid" ]]; then
+            return 0
+        fi
+
+        return 1
+    }
+
+    if is-terminal-window-active; then
+        if is-inside-tmux; then
+            is-current-tmux-pane-active
+            return $?
+        fi
+      else
+        return $?
+    fi
+}

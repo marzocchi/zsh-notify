@@ -1,0 +1,65 @@
+# vim: set nowrap filetype=zsh:
+
+local message type time_elapsed title icon
+
+if ! command -v terminal-notifier > /dev/null 2>&1; then
+  echo cannot find terminal-notifier in \$PATH 1>&2
+  return 1
+fi
+
+if [[ $# -lt 2 ]]; then 
+  echo usage: notifier TYPE TIME_ELAPSED 1>&2
+  return 1
+fi
+
+zstyle -s ':notify:' plugin-dir plugin_dir
+source "$plugin_dir"/lib
+
+type="$1"
+time_elapsed="$(format-time "$2")"
+message=$(<&0)
+
+zstyle -s ':notify:' "$type"-sound notification_sound
+zstyle -s ':notify:' "$type"-icon icon
+
+title=$(notification-title "$type" time_elapsed "$time_elapsed")
+
+if [[ -n "$icon" ]]; then
+    icon_option="-i $icon"
+fi
+
+notify-send ${=icon_option} "$title" "$message"
+
+function play-sound {
+    if command -v paplay > /dev/null 2>&1; then
+        paplay "$1"
+    elif command -v aplay > /dev/null 2>&1; then
+        aplay "$1"
+    elif command -v ossplay > /dev/null 2>&1; then
+        ossplay "$1"
+    else
+        echo "could not find a sound file player." >&2
+        return 1
+    fi
+}
+
+if [[ -n "$notification_sound" ]]; then
+    if [[ -a "$notification_sound" ]]; then
+        play-sound "$notification_sound"
+    else
+        echo "file $notification_sound not found." >&2
+    fi
+fi
+
+if command -v wmctrl > /dev/null 2>&1; then
+    local parent_pid
+
+    zstyle -s ':notify:' parent-pid parent_pid
+
+    if zstyle -t ':notify:' activate-terminal; then
+        wmctrl -ia $(wmctrl -lp | awk -vpid="$parent_pid" '$3==pid {print $1; exit}')
+    elif ! (zstyle -t ':notify:' disable-urgent); then
+        wmctrl -i -r $(wmctrl -lp | awk -vpid="$parent_pid" '$3==pid {print $1; exit}') \
+          -b add,demands_attention
+    fi
+fi

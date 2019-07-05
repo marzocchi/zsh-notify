@@ -1,0 +1,44 @@
+#!/usr/bin/env zunit
+
+@setup {
+  load ../notify.plugin.zsh
+
+  if [[ "$WINDOWID" ==  "" ]]; then
+    skip 'must be run on x11 with a terminal that sets WINDOWID'
+  fi
+
+}
+
+@teardown {
+  if [[ "$WINDOWID" == "" ]]; then
+    return
+  fi
+
+  xdotool windowactivate "$WINDOWID"
+}
+
+@test 'xterm: is-terminal-active - yes' {
+  xdotool windowactivate "$WINDOWID"
+  
+  run is-terminal-active
+  assert $state equals 0
+}
+
+@test 'xterm: is-terminal-active - window minimized' {
+  xdotool windowminimize "$WINDOWID"
+
+  sleep 1
+  
+  run is-terminal-active
+  assert $state equals 1
+}
+
+@test 'xterm: is-terminal-active - other window on top' {
+  pid=$(xterm 2>/dev/null 1>/dev/null &; echo $!)
+  
+  run is-terminal-active
+
+  assert $state equals 1
+
+  kill $pid || true
+}

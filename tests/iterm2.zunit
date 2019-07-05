@@ -1,0 +1,68 @@
+#!/usr/bin/env zunit
+
+@setup {
+  load ../notify.plugin.zsh
+
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+    skip 'this test must be run in iTerm.app'
+  fi
+}
+
+@teardown {
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+    return
+  fi
+
+  osascript <<SCPT
+tell app id "com.googlecode.iterm2"
+  activate
+end 
+SCPT
+}
+
+@test 'iTerm2: is-terminal-active - yes' {
+  osascript <<SCPT
+tell app id "com.googlecode.iterm2"
+  activate
+end 
+SCPT
+
+  run is-terminal-active
+  assert $state equals 0
+}
+
+@test 'iTerm2: is-terminal-active - app in background' {
+  osascript <<SCPT
+tell app "System Events"
+    tell item 1 of (application processes whose bundle identifier is "com.googlecode.iterm2")
+      set visible to false
+    end tell
+end tell
+SCPT
+
+  run is-terminal-active
+  assert $state equals 1
+}
+
+@test 'iTerm2: is-terminal-active - other tab active' {
+  osascript <<SCPT
+tell app id "com.googlecode.iterm2"
+	tell current window
+    create tab with default profile
+	end tell
+end tell
+SCPT
+
+  run is-terminal-active
+  assert $state equals 1
+
+  osascript <<SCPT
+tell app id "com.googlecode.iterm2"
+  tell current window
+    tell current session
+      close
+    end tell
+  end
+end tell
+SCPT
+}
