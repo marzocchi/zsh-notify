@@ -49,8 +49,12 @@ function zsh-notify-before-command() {
     # workaround the lack of $WINDOWID in gnome-terminal and possibly other
     # linux terms by capturing the ID of the window that is _now_ focused (eg.
     # it's the one the user typed a command).
-    if [[ "$impl" == xdotool && "$window_id" == "" ]]; then
-        zstyle ':notify:*' window-id "$(xdotool getwindowfocus)"
+    if [[ "$impl" == xdotool ]]; then
+        if [[ -n "$WINDOWID" ]]; then
+            zstyle ':notify:*' window-id "$WINDOWID"
+        else
+            zstyle ':notify:*' window-id "$(xdotool getwindowfocus)"
+        fi
     fi
 }
 
