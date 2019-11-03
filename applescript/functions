@@ -1,0 +1,100 @@
+# vim: set nowrap filetype=zsh:
+#
+# is-terminal-active exits with status 0 when the current shell is running on an
+# active terminal window or tab, status 1 when the window or tab is in background
+# and status 2 if the current terminal is not supported (eg. it's not iTerm2 nor
+# Apple Terminal).
+function is-terminal-active() {
+    local plugin_dir
+
+    zstyle -s ':notify:' plugin-dir plugin_dir
+    source "$plugin_dir"/lib
+
+    # run an AppleScript, selected from ./resources by basename given as the
+    # first argument, with all other arguments are positional arguments to the
+    # script's `on run` handler.
+    function run-applescript() {
+        local script_name
+
+        script_name="$1"
+        shift
+
+        "$plugin_dir"/applescript/resources/"$script_name".applescript $@ 2>/dev/null
+    }
+
+    # exit with code 0 if the terminal window/tab is active, code 1 if inactive.
+    function is-terminal-window-active {
+        local term
+
+        if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
+            term=iterm2
+        elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+            term=apple-terminal
+        else
+            return 2
+        fi
+
+        run-applescript is-"$term"-active "$(current-tty)"
+    }
+
+    if is-terminal-window-active; then
+        if is-inside-tmux; then
+            is-current-tmux-pane-active
+            return $?
+        fi
+      else
+          return $?
+    fi
+}
+
+function zsh-notify() {
+    local message title time_elapsed type app_id app_id_option sound_option
+
+    if ! command -v terminal-notifier > /dev/null 2>&1; then
+        echo cannot find terminal-notifier in \$PATH 1>&2
+        return 1
+    fi
+
+    if [[ $# -lt 2 ]]; then
+        echo usage: zsh-notify TYPE TIME_ELAPSED 1>&2
+        return 1
+    fi
+
+    zstyle -s ':notify:' plugin-dir plugin_dir
+    source "$plugin_dir"/lib
+
+    type="$1"
+    time_elapsed="$(format-time $2)"
+    message=$(<&0)
+
+    zstyle -s ':notify:' "$type"-sound notification_sound
+    zstyle -s ':notify:' "$type"-icon icon
+
+    title=$(notification-title "$type" time_elapsed "$time_elapsed")
+
+    if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
+        app_id="com.googlecode.iterm2"
+    elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+        app_id="com.apple.terminal"
+    fi
+
+    if [[ -n "$app_id" ]]; then
+        app_id_option="-activate $app_id"
+    fi
+
+    if [[ -n "$notification_sound" ]]; then
+        sound_option="-sound $notification_sound"
+    fi
+
+    if [[ -n "$icon" ]]; then
+        icon_option="-appIcon $icon"
+    fi
+
+    terminal-notifier ${=app_id_option} ${=sound_option} ${=icon_option} \
+        -title "${title}" <<< "$message" > /dev/null 2>&1 &!
+
+    if zstyle -t ':notify:' activate-terminal; then
+        osascript <<< "tell app id \"$app_id\" to activate" 1>/dev/null
+    fi
+}
+
