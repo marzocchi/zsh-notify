@@ -1,0 +1,118 @@
+# vim: set nowrap filetype=zsh:
+#
+# is-terminal-active checks if the current window (identified by the window-id
+# stored in zstyle) is active, and exits with 1 if not; it does support TMUX,
+# but doesn't support tabs.
+is-terminal-active() {
+    local plugin_dir
+
+    zstyle -s ':notify:' plugin-dir plugin_dir
+    source "$plugin_dir"/lib
+
+    function is-terminal-window-active {
+        local active_wid wid
+
+        active_wid=$(xdotool getactivewindow)
+
+        zstyle -s ':notify:' window-id wid
+
+        if [[ "$active_wid" == "$wid" ]]; then
+            return 0
+        fi
+
+        return 1
+    }
+
+    if is-terminal-window-active; then
+        if is-inside-tmux; then
+            is-current-tmux-pane-active
+            return $?
+        fi
+    else
+        return $?
+    fi
+}
+
+function zsh-notify() {
+    local message type time_elapsed title icon
+
+    if ! command -v notify-send > /dev/null 2>&1; then
+        echo cannot find notify-send in \$PATH 1>&2
+        return 1
+    fi
+
+    if [[ $# -lt 2 ]]; then
+        echo usage: notifier TYPE TIME_ELAPSED 1>&2
+        return 1
+    fi
+
+    zstyle -s ':notify:' plugin-dir plugin_dir
+    source "$plugin_dir"/lib
+
+    type="$1"
+    time_elapsed="$(format-time "$2")"
+    message=$(<&0)
+
+    zstyle -s ':notify:' "$type"-sound notification_sound
+    zstyle -s ':notify:' "$type"-icon icon
+
+    title=$(notification-title "$type" time_elapsed "$time_elapsed")
+
+    if [[ -n "$icon" ]]; then
+        icon_option="-i $icon"
+    fi
+
+    notify-send ${=icon_option} "$title" "$message"
+
+    function play-sound {
+        if command -v paplay > /dev/null 2>&1; then
+            paplay "$1"
+        elif command -v aplay > /dev/null 2>&1; then
+            aplay "$1"
+        elif command -v ossplay > /dev/null 2>&1; then
+            ossplay "$1"
+        else
+            echo "could not find a sound file player." >&2
+            return 1
+        fi
+    }
+
+    if [[ -n "$notification_sound" ]]; then
+        if [[ -a "$notification_sound" ]]; then
+            play-sound "$notification_sound"
+        else
+            echo "file $notification_sound not found." >&2
+        fi
+    fi
+
+    if command -v wmctrl > /dev/null 2>&1; then
+        local parent_pid
+
+        zstyle -s ':notify:' parent-pid parent_pid
+
+        if zstyle -t ':notify:' activate-terminal; then
+            wmctrl -ia $(wmctrl -lp | awk -vpid="$parent_pid" '$3==pid {print $1; exit}')
+        elif ! (zstyle -t ':notify:' disable-urgent); then
+            wmctrl -i -r $(wmctrl -lp | awk -vpid="$parent_pid" '$3==pid {print $1; exit}') \
+              -b add,demands_attention
+        fi
+    fi
+}
+
+function store-window-id() {
+    local window_id
+
+    # workaround the lack of $WINDOWID in gnome-terminal and possibly other
+    # linux terms by capturing the ID of the window that is _now_ focused (eg.
+    # it's the one the user typed a command).
+    if [[ -n "$WINDOWID" ]]; then
+        zstyle ':notify:*' window-id "$WINDOWID"
+    else
+        zstyle ':notify:*' window-id "$(xdotool getwindowfocus)"
+    fi
+
+    zstyle -s ':notify:*' window-id window_id
+}
+
+autoload add-zsh-hook
+add-zsh-hook preexec store-window-id

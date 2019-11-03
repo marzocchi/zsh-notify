@@ -3,20 +3,19 @@
 plugin_dir="$(dirname $0:A)"
 
 if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
-  impl=applescript
+    source "$plugin_dir"/applescript/functions
 elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
-  impl=applescript
+    source "$plugin_dir"/applescript/functions
 elif [[ "$DISPLAY" != '' ]] && command -v xdotool > /dev/null 2>&1 &&  command -v wmctrl > /dev/null 2>&1; then
-  impl=xdotool
+    source "$plugin_dir"/xdotool/functions
 else
-  echo "zsh-notify: unsupported environment" >&1
-  return
+    echo "zsh-notify: unsupported environment" >&1
+    return
 fi
 
 fpath=($fpath "$plugin_dir"/"$impl")
 
 zstyle ':notify:*' plugin-dir "$plugin_dir"
-zstyle ':notify:*' impl "$impl"
 zstyle ':notify:*' command-complete-timeout 30
 zstyle ':notify:*' error-log /dev/stderr
 zstyle ':notify:*' notifier zsh-notify
@@ -30,11 +29,6 @@ zstyle ':notify:*' disable-urgent no
 zstyle ':notify:*' activate-terminal no
 
 unset plugin_dir
-unset impl
-
-if [[ "$WINDOWID" != "" ]]; then
-    zstyle ':notify:*' window-id "$WINDOWID"
-fi
 
 # store command line and start time for later
 function zsh-notify-before-command() {
@@ -42,20 +36,6 @@ function zsh-notify-before-command() {
 
     last_command="$1"
     start_time=$(date "+%s")
-
-    zstyle -s ':notify:' window-id window_id
-    zstyle -s ':notify:' impl impl
-
-    # workaround the lack of $WINDOWID in gnome-terminal and possibly other
-    # linux terms by capturing the ID of the window that is _now_ focused (eg.
-    # it's the one the user typed a command).
-    if [[ "$impl" == xdotool ]]; then
-        if [[ -n "$WINDOWID" ]]; then
-            zstyle ':notify:*' window-id "$WINDOWID"
-        else
-            zstyle ':notify:*' window-id "$(xdotool getwindowfocus)"
-        fi
-    fi
 }
 
 # notify about the last command's success or failure -- maybe.
@@ -85,8 +65,5 @@ function zsh-notify-after-command() {
     unset last_command last_status start_time
 }
 
-autoload add-zsh-hook
-autoload -U is-terminal-active
-autoload -U zsh-notify
 add-zsh-hook preexec zsh-notify-before-command
 add-zsh-hook precmd zsh-notify-after-command

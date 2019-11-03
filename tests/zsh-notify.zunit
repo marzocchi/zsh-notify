@@ -71,13 +71,12 @@
 }
 
 @test 'zsh-notify - notify-send' {
-  zstyle -s ':notify:' impl impl
-
-  if [[ "$impl" != "xdotool" ]]; then
+  if ! command -v xdotool 1>/dev/null 2>/dev/null; then
     skip 'must be run on linux'
   fi
    
-  run zsh-notify success 3  <<<"notification text" 
+  run zsh-notify success 3  <<<"notification text"
+
   assert $state equals 0
   assert "$(get-args)" same_as "#win (in 3s) notification text"
   assert "$(get-stdin)" same_as ""
