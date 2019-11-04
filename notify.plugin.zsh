@@ -64,6 +64,7 @@ function zsh-notify-after-command() {
     zstyle -s ':notify:' command-complete-timeout command_complete_timeout 
     zstyle -s ':notify:' notifier notifier
 
+    touch "$error_log"
     (
       if [[ -n $start_time ]]; then
           now=$(date "+%s")
@@ -76,7 +77,7 @@ function zsh-notify-after-command() {
               fi
           fi
       fi
-    )  2>&1 | sed 's/^/zsh-notify: /' > "$error_log"
+    )  2>&1 | sed 's/^/zsh-notify: /' >> "$error_log"
 
     unset last_command last_status start_time
 }
