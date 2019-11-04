@@ -2,11 +2,6 @@
 
 local message type time_elapsed title icon
 
-if ! command -v terminal-notifier > /dev/null 2>&1; then
-  echo cannot find terminal-notifier in \$PATH 1>&2
-  return 1
-fi
-
 if [[ $# -lt 2 ]]; then 
   echo usage: notifier TYPE TIME_ELAPSED 1>&2
   return 1
