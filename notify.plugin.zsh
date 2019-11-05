@@ -2,20 +2,16 @@
 
 plugin_dir="$(dirname $0:A)"
 
-_USING_XDOTOOL=0
 if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
     source "$plugin_dir"/applescript/functions
 elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
     source "$plugin_dir"/applescript/functions
 elif [[ "$DISPLAY" != '' ]] && command -v xdotool > /dev/null 2>&1 &&  command -v wmctrl > /dev/null 2>&1; then
-    _USING_XDOTOOL=1
     source "$plugin_dir"/xdotool/functions
 else
     echo "zsh-notify: unsupported environment" >&1
     return
 fi
-
-fpath=($fpath)
 
 zstyle ':notify:*' plugin-dir "$plugin_dir"
 zstyle ':notify:*' command-complete-timeout 30
@@ -35,15 +31,8 @@ unset plugin_dir
 
 # store command line and start time for later
 function zsh-notify-before-command() {
-    local window_id always_check_wid
-
     last_command="$1"
     start_time=$(date "+%s")
-
-    if [[ "$_USING_XDOTOOL" == 1 &&
-        ("$window_id" == "" || always_check_wid == "yes") ]]; then
-        zstyle ':notify:*' window-id "$(xdotool getwindowfocus)"
-    fi
 }
 
 # notify about the last command's success or failure -- maybe.
@@ -73,5 +62,6 @@ function zsh-notify-after-command() {
     unset last_command last_status start_time
 }
 
+autoload -U add-zsh-hook
 add-zsh-hook preexec zsh-notify-before-command
 add-zsh-hook precmd zsh-notify-after-command

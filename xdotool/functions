@@ -115,19 +115,21 @@ function zsh-notify() {
 # existing shells in the previous window, but in all other cases it will be
 # incorrect.
 function store-window-id() {
-    local window_id
+    local always_check
+    zstyle -s ':notify:' always-check-active-window always_check
 
-    # workaround the lack of $WINDOWID in gnome-terminal and possibly other
-    # linux terms by capturing the ID of the window that is _now_ focused (eg.
-    # it's the one the user typed a command).
-    if [[ -n "$WINDOWID" ]]; then
-        zstyle ':notify:*' window-id "$WINDOWID"
-    else
+    # some linux terminals such as gnome-terminal don't set the WINDOWID, so we
+    # check if it's empty. If it's empty or the user explicitly requests it (see
+    # the function documentation for details on why this is needed), we capture
+    # the ID of the window that is _now_ focused. This should be the window of
+    # the terminal used to type the command, as this function is run as a prexec
+    # hook.
+    if [[ -z "$WINDOWID" || "$always_check" == 'yes' ]]; then
         zstyle ':notify:*' window-id "$(xdotool getwindowfocus)"
+    else
+        zstyle ':notify:*' window-id "$WINDOWID"
     fi
-
-    zstyle -s ':notify:*' window-id window_id
 }
 
-autoload add-zsh-hook
+autoload -U add-zsh-hook
 add-zsh-hook preexec store-window-id
