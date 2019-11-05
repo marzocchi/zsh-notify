@@ -13,8 +13,6 @@ else
     return
 fi
 
-fpath=($fpath "$plugin_dir"/"$impl")
-
 zstyle ':notify:*' plugin-dir "$plugin_dir"
 zstyle ':notify:*' command-complete-timeout 30
 zstyle ':notify:*' error-log /dev/stderr
@@ -27,13 +25,12 @@ zstyle ':notify:*' error-sound ''
 zstyle ':notify:*' error-icon ''
 zstyle ':notify:*' disable-urgent no
 zstyle ':notify:*' activate-terminal no
+zstyle ':notify:*' always-check-active-window no
 
 unset plugin_dir
 
 # store command line and start time for later
 function zsh-notify-before-command() {
-    local window_id impl
-
     last_command="$1"
     start_time=$(date "+%s")
 }
@@ -66,5 +63,6 @@ function zsh-notify-after-command() {
     unset last_command last_status start_time
 }
 
+autoload -U add-zsh-hook
 add-zsh-hook preexec zsh-notify-before-command
 add-zsh-hook precmd zsh-notify-after-command
