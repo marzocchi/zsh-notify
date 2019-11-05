@@ -6,6 +6,9 @@ Desktop notifications for long-running commands in ZSH.
 Supported terminals and requirements
 ---
 
+:warning: **iTerm2 user?** If you don't need support for other terminal have a look at
+this new project → [iterm-notify](https://github.com/marzocchi/iterm-notify/).
+
 - On macOS: Terminal.app or [iTerm2][iterm2];
 - On Linux (and possibly other systems): any terminal application should be
   supported as `xdotool` and `wmctrl` are used to query and modify windows
