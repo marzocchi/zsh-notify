@@ -81,6 +81,15 @@ sourcing `notify.plugin.zsh`.
 
         zstyle ':notify:*' notifier ~/bin/my-notifier
 
+- Set a blacklist of commands that should never trigger notifications, using a
+  regex support by grep's extended regular expression syntax:
+
+        zstyle ':notify:*' blacklist-regex 'find|git'
+
+- Enable when connected over SSH, which is disabled by default.
+
+        zstyle ':notify:*' enable-on-ssh yes
+
 - Disable error reporting (or send it somewhere else)
 
         zstyle ':notify:*' error-log /dev/null
