@@ -26,41 +26,78 @@ zstyle ':notify:*' error-icon ''
 zstyle ':notify:*' disable-urgent no
 zstyle ':notify:*' activate-terminal no
 zstyle ':notify:*' always-check-active-window no
+zstyle ':notify:*' blacklist-regex ''
+zstyle ':notify:*' enable-on-ssh no
 
 unset plugin_dir
 
+function _zsh-notify-is-command-blacklisted() {
+    local blacklist_regex
+    zstyle -s ':notify:*' blacklist-regex blacklist_regex
+    if [[ -z "$blacklist_regex" ]]; then
+        return 1
+    fi
+    print -rn -- "$last_command" | grep -q -E "$blacklist_regex"
+}
+
+function _zsh-notify-is-ssh() {
+    [[ -n ${SSH_CLIENT-} || -n ${SSH_TTY-} || -n ${SSH_CONNECTION-} ]]
+}
+
+function _zsh-notify-should-notify() {
+    local last_status="$1"
+    local time_elapsed="$2"
+    if [[ -z $start_time ]] || _zsh-notify-is-command-blacklisted; then
+        return 1
+    fi
+    local enable_on_ssh
+    zstyle -b ':notify:*' enable-on-ssh enable_on_ssh
+    if _zsh-notify-is-ssh && [[ $enable_on_ssh == 'no' ]]; then
+        return 2
+    fi
+    if ((last_status == 0)); then
+        local command_complete_timeout
+        zstyle -s ':notify:*' command-complete-timeout command_complete_timeout
+        if (( time_elapsed < command_complete_timeout )); then
+            return 3
+        fi
+    fi
+    # this is the last check since it will be the slowest if
+    # `always-check-active-window` is set.
+    if is-terminal-active; then
+        return 4
+    fi
+    return 0
+}
+
 # store command line and start time for later
 function zsh-notify-before-command() {
-    last_command="$1"
-    start_time=$(date "+%s")
+    declare -g last_command="$1"
+    declare -g start_time
+    start_time="$(date "+%s")"
 }
 
 # notify about the last command's success or failure -- maybe.
 function zsh-notify-after-command() {
-    last_status=$?
+    local last_status=$?
 
-    local now time_elapsed error_log command_complete_timeout notifier
+    local error_log notifier now time_elapsed
 
     zstyle -s ':notify:' error-log error_log 
-    zstyle -s ':notify:' command-complete-timeout command_complete_timeout 
     zstyle -s ':notify:' notifier notifier
 
     touch "$error_log"
     (
-      if [[ -n $start_time ]]; then
-          now=$(date "+%s")
-          (( time_elapsed = now - start_time ))
-          if [[ $last_status -gt "0" ]]; then
-              is-terminal-active || "$notifier" error "$time_elapsed" <<< "$last_command"
-          elif [[ -n $start_time ]]; then
-              if (( time_elapsed > command_complete_timeout )); then
-                is-terminal-active || "$notifier" success "$time_elapsed" <<< "$last_command"
-              fi
-          fi
-      fi
-    )  2>&1 | sed 's/^/zsh-notify: /' >> "$error_log"
+        now="$(date "+%s")"
+        (( time_elapsed = now - start_time ))
+        if _zsh-notify-should-notify "$last_status" "$time_elapsed"; then
+            local result
+            result="$(((last_status == 0)) && echo success || echo error)"
+            "$notifier" "$result" "$time_elapsed" <<< "$last_command"
+        fi
+    )  2>&1 | sed 's/^/zsh-notify: /' > "$error_log"
 
-    unset last_command last_status start_time
+    unset last_command start_time
 }
 
 autoload -U add-zsh-hook
