@@ -2,6 +2,7 @@
 
 @setup {
   load ../notify.plugin.zsh
+  zstyle ':notify:*' always-check-active-window 'yes'
 
   if ! command -v xdotool 1>/dev/null 2>/dev/null; then
     skip 'must be run on x11'
@@ -20,12 +21,17 @@
   assert $state equals 0
 }
 
-@test 'xterm: is-terminal-active - window minimized' {
+@test 'xterm: is-terminal-active - window unmapped' {
   store-window-id
 
-  xdotool windowminimize "$(xdotool getwindowfocus)"
-  sleep 1
-
+  # On tiling window managers, windowminize won't work, so we unmap and remap
+  # the window.
+  local focused_wid 
+  focused_wid="$(xdotool getwindowfocus)"
+  xdotool windowunmap --sync "$focused_wid"
   run is-terminal-active
-  assert $state equals 1
+  local is_active=$state
+  xdotool windowmap --sync "$focused_wid"
+
+  assert $is_active equals 1
 }
