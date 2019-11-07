@@ -51,7 +51,7 @@ function _zsh-notify-should-notify() {
         return 1
     fi
     local enable_on_ssh
-    zstyle -b ':notify:*' enable-on-ssh enable_on_ssh
+    zstyle -b ':notify:*' enable-on-ssh enable_on_ssh || true
     if _zsh-notify-is-ssh && [[ $enable_on_ssh == 'no' ]]; then
         return 2
     fi

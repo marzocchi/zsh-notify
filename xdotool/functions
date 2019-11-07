@@ -116,7 +116,7 @@ function zsh-notify() {
 # incorrect.
 function store-window-id() {
     local always_check
-    zstyle -b ':notify:' always-check-active-window always_check
+    zstyle -b ':notify:' always-check-active-window always_check || true
 
     # some linux terminals such as gnome-terminal don't set the WINDOWID, so we
     # check if it's empty. If it's empty or the user explicitly requests it (see
