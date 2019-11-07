@@ -95,7 +95,7 @@ function zsh-notify-after-command() {
             result="$(((last_status == 0)) && echo success || echo error)"
             "$notifier" "$result" "$time_elapsed" <<< "$last_command"
         fi
-    )  2>&1 | sed 's/^/zsh-notify: /' > "$error_log"
+    )  2>&1 | sed 's/^/zsh-notify: /' >> "$error_log"
 
     unset last_command start_time
 }
