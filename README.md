@@ -81,6 +81,11 @@ sourcing `notify.plugin.zsh`.
 
         zstyle ':notify:*' notifier ~/bin/my-notifier
 
+- Use the time elapsed even when the command fails (by default, notifications
+  for command failures are not conditional on the elapsed time).
+
+        zstyle ':notify:*' always-notify-on-failure no
+
 - Set a blacklist of commands that should never trigger notifications, using a
   regex support by grep's extended regular expression syntax:
 
