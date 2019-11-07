@@ -31,13 +31,23 @@ zstyle ':notify:*' enable-on-ssh no
 
 unset plugin_dir
 
+# See https://unix.stackexchange.com/q/150649/126543
+function _zsh-notify-expand-command-aliases() {
+    cmd="$1"
+    functions[__expand-aliases-tmp]="${cmd}"
+    print -rn -- "${functions[__expand-aliases-tmp]#$'\t'}"
+    unset 'functions[__expand-aliases-tmp]'
+}
+
 function _zsh-notify-is-command-blacklisted() {
     local blacklist_regex
     zstyle -s ':notify:*' blacklist-regex blacklist_regex
     if [[ -z "$blacklist_regex" ]]; then
         return 1
     fi
-    print -rn -- "$last_command" | grep -q -E "$blacklist_regex"
+    local cmd
+    cmd="$(_zsh-notify-expand-command-aliases "$last_command")"
+    print -rn -- "$cmd" | grep -q -E "$blacklist_regex"
 }
 
 function _zsh-notify-is-ssh() {
