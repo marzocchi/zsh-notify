@@ -9,7 +9,7 @@ elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
 elif [[ "$DISPLAY" != '' ]] && command -v xdotool > /dev/null 2>&1 &&  command -v wmctrl > /dev/null 2>&1; then
     source "$plugin_dir"/xdotool/functions
 else
-    echo "zsh-notify: unsupported environment" >&1
+    echo "zsh-notify: unsupported environment" >&2
     return
 fi
 
@@ -96,7 +96,7 @@ function zsh-notify-after-command() {
 
     local error_log notifier now time_elapsed
 
-    zstyle -s ':notify:' error-log error_log 
+    zstyle -s ':notify:' error-log error_log
     zstyle -s ':notify:' notifier notifier
 
     touch "$error_log"
