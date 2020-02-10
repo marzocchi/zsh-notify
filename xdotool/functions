@@ -12,7 +12,7 @@ is-terminal-active() {
     function is-terminal-window-active {
         local active_wid wid
 
-        active_wid=$(xdotool getactivewindow)
+        active_wid=$(xdotool getwindowfocus)
 
         zstyle -s ':notify:' window-id wid
 
