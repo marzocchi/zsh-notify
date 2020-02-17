@@ -74,6 +74,8 @@ sourcing `notify.plugin.zsh`.
 
         zstyle ':notify:*' command-complete-timeout 15
 
+   The default value is 30 seconds.
+
 - Replace the built-in notifier with a custom one at `~/bin/my-notifier`. The
   custom notifier will receive the notification type (`error` or `success`) as
   the first argument, the time elapsed as the second argument, and the
