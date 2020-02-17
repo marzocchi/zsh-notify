@@ -123,7 +123,7 @@ marzocchi/zsh-notify` for testing before adding it to your `.zshrc`.
 
 ### [Oh-My-Zsh](http://ohmyz.sh/)
 
-1. `git clone git@github.com:marzocchi/zsh-notify.git ~/.oh-my-zsh/custom/plugins/notify`
+1. `git clone git@github.com:marzocchi/zsh-notify.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/notify`
 2. Add zsh-notify to your plugin list - edit `~./zshrc` and change `plugins=(...)` to `plugins=(... notify)`
 
 **Note:** when cloning, specify the target directory as `notify` since
