@@ -25,6 +25,11 @@ prevent terminal-notifier to hang (see
 Installation and usage
 ---
 
+### macOS Pre-Setup
+1. Install [Homebrew](https://brew.sh/)
+1. `brew install terminal-notifier`
+
+### All Operating Systems
 Just clone this repository and source `notify.plugin.zsh` in your `~/.zshrc`,
 or see below for instructions on installing with some popular package managers.
 
