@@ -3,7 +3,7 @@ zsh-notify
 
 Desktop notifications for long-running commands in ZSH.
 
-Supported terminals and requirements
+Supported terminals
 ---
 
 :warning: **iTerm2 user?** If you don't need support for other terminal have a look at
@@ -14,16 +14,28 @@ this new project → [iterm-notify](https://github.com/marzocchi/iterm-notify/).
   supported as `xdotool` and `wmctrl` are used to query and modify windows
   state.
   
-When using the default configuration, notifications are posted using
-[terminal-notifier.app][terminal-notifier] on macOS and `notify-send` on
-other systems; usage of custom notifier is described in [Configuration](#configuration).
-
-When using Tmux on Yosemite, `reattach-to-user-namespace` is required to
-prevent terminal-notifier to hang (see
-[julienXX/terminal-notifier#115][issue115] for details).
-
-Installation and usage
+Setup and usage
 ---
+
+###  Prerequisites
+
+#### macOS
+Install [terminal-notifier.app][terminal-notifier] (default*)
+
+_When using Tmux on Yosemite:_
+
+`reattach-to-user-namespace` is required to prevent terminal-notifier to hang 
+(see [julienXX/terminal-notifier#115][issue115] for details).
+
+#### Linux/Other
+
+Install `notify-send` (default*) -- available in [libnotify][libnotify]
+
+---
+
+\* _usage of custom notifiers is described in [Configuration](#configuration)._
+
+### Installation
 
 Just clone this repository and source `notify.plugin.zsh` in your `~/.zshrc`,
 or see below for instructions on installing with some popular package managers.
@@ -106,6 +118,7 @@ sourcing `notify.plugin.zsh`.
         zstyle ':notify:*' always-check-active-window yes
 
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
+[libnotify]: https://github.com/GNOME/libnotify
 [iterm2]: http://www.iterm2.com/
 [dogefy.sh]: https://gist.github.com/marzocchi/14c47a49643389029a2026b4d4fec7ae
 [issue115]: https://github.com/julienXX/terminal-notifier/issues/115
