@@ -17,14 +17,14 @@ this new project → [iterm-notify](https://github.com/marzocchi/iterm-notify/).
 Setup and usage
 ---
 
-###  Prerequisites
+### Prerequisites
 
 #### macOS
 Install [terminal-notifier.app][terminal-notifier] (default*)
 
-_When using Tmux on Yosemite:_
+_When using `tmux` on Yosemite:_
 
-`reattach-to-user-namespace` is required to prevent terminal-notifier to hang 
+`reattach-to-user-namespace` is required to prevent `terminal-notifier` from hanging
 (see [julienXX/terminal-notifier#115][issue115] for details).
 
 #### Linux/Other
@@ -33,7 +33,7 @@ Install `notify-send` (default*) -- available in [libnotify][libnotify]
 
 ---
 
-\* _usage of custom notifiers is described in [Configuration](#configuration)._
+\* _usage of custom notifiers is described in [Configuration](#configuration)_
 
 ### Installation
 
