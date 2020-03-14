@@ -86,15 +86,14 @@ function zsh-notify() {
     fi
 
     if command -v wmctrl > /dev/null 2>&1; then
-        local parent_pid
+        local wid
 
-        zstyle -s ':notify:' parent-pid parent_pid
+        zstyle -s ':notify:' window-id wid
 
         if zstyle -t ':notify:' activate-terminal; then
-            wmctrl -ia $(wmctrl -lp | awk -vpid="$parent_pid" '$3==pid {print $1; exit}')
+            wmctrl -ia $wid
         elif ! (zstyle -t ':notify:' disable-urgent); then
-            wmctrl -i -r $(wmctrl -lp | awk -vpid="$parent_pid" '$3==pid {print $1; exit}') \
-              -b add,demands_attention
+            wmctrl -i -r $wid -b add,demands_attention
         fi
     fi
 }
