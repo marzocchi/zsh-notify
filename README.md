@@ -88,12 +88,13 @@ sourcing `notify.plugin.zsh`.
 
    The default value is 30 seconds.
 
-- Set application name in notification
+- Set application name in notification if set.
+  If set `AUTO` it will strip the name from message.
   (only notify-send).
 
         zstyle ':notify:*' app-name sh
 
-   The default value is zsh.
+   The default value is AUTO.
 
 - Set a expire time in notifications
   (only notify-send).
