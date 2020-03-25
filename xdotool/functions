@@ -64,16 +64,12 @@ function zsh-notify() {
         icon_option="-i $icon"
     fi
 
-    if [[ -n "$app_name" ]]; then
-        if [[ "$app_name" -eq "AUTO" ]]; then
-            app_name_option="-a ${message%% *}"
+    if [[ -z "$app_name" ]]; then
+            app_name="${message%% *}"
             message="${message#* }"
-        else
-            app_name_option="-a $app_name"
-        fi
     fi
 
-    notify-send ${=app_name_option} -t $expire_time ${=icon_option} "$title" "$message"
+    notify-send -a ${=app_name} -t $expire_time ${=icon_option} "$title" -- "$message"
 
     function play-sound {
         if command -v paplay > /dev/null 2>&1; then
