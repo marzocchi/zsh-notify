@@ -55,6 +55,8 @@ function zsh-notify() {
 
     zstyle -s ':notify:' "$type"-sound notification_sound
     zstyle -s ':notify:' "$type"-icon icon
+    zstyle -s ':notify:' app-name app_name
+    zstyle -s ':notify:' expire-time expire_time
 
     title=$(notification-title "$type" time_elapsed "$time_elapsed")
 
@@ -62,7 +64,12 @@ function zsh-notify() {
         icon_option="-i $icon"
     fi
 
-    notify-send ${=icon_option} "$title" "$message"
+    if [[ -z "$app_name" ]]; then
+            app_name="${message%% *}"
+            message="${message#* }"
+    fi
+
+    notify-send -a ${=app_name} -t $expire_time ${=icon_option} "$title" -- "$message"
 
     function play-sound {
         if command -v paplay > /dev/null 2>&1; then
