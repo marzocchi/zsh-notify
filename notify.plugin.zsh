@@ -8,6 +8,8 @@ elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
     source "$plugin_dir"/applescript/functions
 elif [[ "$DISPLAY" != '' ]] && command -v xdotool > /dev/null 2>&1 &&  command -v wmctrl > /dev/null 2>&1; then
     source "$plugin_dir"/xdotool/functions
+elif command -v notify-send > /dev/null 2>&1 && (!zstyle -t ':notify:' activate-terminal); then
+    source "$plugin_dir"/xdotool/functions
 else
     echo "zsh-notify: unsupported environment" >&2
     return
