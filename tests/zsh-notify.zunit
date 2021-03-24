@@ -13,8 +13,8 @@
   if [[ "$TERM_PROGRAM" != "Apple_Terminal" ]]; then
     skip 'must be run in Apple Terminal'
   fi
-   
-  run zsh-notify success 3  <<<"notification text" 
+
+  run zsh-notify success 3  <<<"notification text"
   assert $state equals 0
   assert "$(get-args)" same_as "-activate com.apple.terminal -title #win (in 3s)"
   assert "$(get-stdin)" same_as "notification text"
@@ -26,10 +26,10 @@
   fi
 
   zstyle ':notify:*' success-icon custom.gif
-   
-  run zsh-notify success 3  <<<"notification text" 
+
+  run zsh-notify success 3  <<<"notification text"
   assert $state equals 0
-  assert "$(get-args)" same_as "-activate com.apple.terminal -appIcon custom.gif -title #win (in 3s)"
+  assert "$(get-args)" same_as "-activate com.apple.terminal -contentImage custom.gif -title #win (in 3s)"
   assert "$(get-stdin)" same_as "notification text"
 }
 
@@ -38,8 +38,8 @@
   if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
     skip 'must be run in iTerm2'
   fi
-   
-  run zsh-notify success 3  <<<"notification text" 
+
+  run zsh-notify success 3  <<<"notification text"
   assert $state equals 0
 
   run get-args
@@ -57,13 +57,13 @@
   fi
 
   zstyle ':notify:*' success-icon custom.gif
-   
-  run zsh-notify success 3  <<<"notification text" 
+
+  run zsh-notify success 3  <<<"notification text"
   assert $state equals 0
 
   run get-args
   assert $state equals 0
-  assert "$output" same_as "-activate com.googlecode.iterm2 -appIcon custom.gif -title #win (in 3s)"
+  assert "$output" same_as "-activate com.googlecode.iterm2 -contentImage custom.gif -title #win (in 3s)"
 
   run get-stdin
   assert $state equals 0
@@ -74,7 +74,7 @@
   if ! command -v xdotool 1>/dev/null 2>/dev/null; then
     skip 'must be run on linux'
   fi
-   
+
   run zsh-notify success 3  <<<"notification text"
 
   assert $state equals 0
