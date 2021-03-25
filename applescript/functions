@@ -87,7 +87,7 @@ function zsh-notify() {
     fi
 
     if [[ -n "$icon" ]]; then
-        icon_option="-appIcon $icon"
+        icon_option="-contentImage $icon"
     fi
 
     terminal-notifier ${=app_id_option} ${=sound_option} ${=icon_option} \
@@ -97,4 +97,3 @@ function zsh-notify() {
         osascript <<< "tell app id \"$app_id\" to activate" 1>/dev/null
     fi
 }
-
