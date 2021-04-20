@@ -2,9 +2,7 @@
 
 plugin_dir="$(dirname $0:A)"
 
-if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
-    source "$plugin_dir"/applescript/functions
-elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+if [[ "$TERM_PROGRAM" == 'iTerm.app' ]] || [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]] || [[ -n "$ITERM_SESSION_ID" ]] || [[ -n "$TERM_SESSION_ID" ]]; then
     source "$plugin_dir"/applescript/functions
 elif [[ "$DISPLAY" != '' ]] && command -v xdotool > /dev/null 2>&1 &&  command -v wmctrl > /dev/null 2>&1; then
     source "$plugin_dir"/xdotool/functions

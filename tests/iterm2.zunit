@@ -3,20 +3,20 @@
 @setup {
   load ../notify.plugin.zsh
 
-  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]] && [[ -z "$ITERM_SESSION_ID" ]]; then
     skip 'this test must be run in iTerm.app'
   fi
 }
 
 @teardown {
-  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]] && [[ -z "$ITERM_SESSION_ID" ]]; then
     return
   fi
 
   osascript <<SCPT
 tell app id "com.googlecode.iterm2"
   activate
-end 
+end
 SCPT
 }
 
@@ -24,7 +24,7 @@ SCPT
   osascript <<SCPT
 tell app id "com.googlecode.iterm2"
   activate
-end 
+end
 SCPT
 
   run is-terminal-active
