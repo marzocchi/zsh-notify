@@ -26,9 +26,9 @@ function is-terminal-active() {
     function is-terminal-window-active {
         local term
 
-        if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
+        if [[ "$TERM_PROGRAM" == 'iTerm.app' ]] || [[ -n "$ITERM_SESSION_ID" ]]; then
             term=iterm2
-        elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+        elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]] || [[ -n "$TERM_SESSION_ID" ]]; then
             term=apple-terminal
         else
             return 2
@@ -72,9 +72,9 @@ function zsh-notify() {
 
     title=$(notification-title "$type" time_elapsed "$time_elapsed")
 
-    if [[ "$TERM_PROGRAM" == 'iTerm.app' ]]; then
+    if [[ "$TERM_PROGRAM" == 'iTerm.app' ]] || [[ -n "$ITERM_SESSION_ID" ]]; then
         app_id="com.googlecode.iterm2"
-    elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]]; then
+    elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]] || [[ -n "$TERM_SESSION_ID" ]]; then
         app_id="com.apple.terminal"
     fi
 

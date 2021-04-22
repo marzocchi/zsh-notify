@@ -35,7 +35,7 @@
 
 
 @test 'zsh-notify - terminal-notifier in iTerm2' {
-  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]] && [[ -z "$ITERM_SESSION_ID" ]]; then
     skip 'must be run in iTerm2'
   fi
 
@@ -52,7 +52,7 @@
 }
 
 @test 'zsh-notify - terminal-notifier in iTerm2 with icon' {
-  if [[ "$TERM_PROGRAM" != "iTerm.app" ]]; then
+  if [[ "$TERM_PROGRAM" != "iTerm.app" ]] && [[ -z "$ITERM_SESSION_ID" ]]; then
     skip 'must be run in iTerm2'
   fi
 
