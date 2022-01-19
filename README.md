@@ -129,6 +129,10 @@ sourcing `notify.plugin.zsh`.
 
         zstyle ':notify:*' always-check-active-window yes
 
+- Ignore checking if the terminal is focused at all:
+
+        zstyle ':notify:*' check-focus no
+
 [terminal-notifier]: https://github.com/alloy/terminal-notifier 
 [libnotify]: https://github.com/GNOME/libnotify
 [iterm2]: http://www.iterm2.com/
