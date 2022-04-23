@@ -69,7 +69,7 @@ function _zsh-notify-should-notify() {
     fi
     local always_notify_on_failure
     zstyle -b ':notify:*' always-notify-on-failure always_notify_on_failure
-    if ((last_status == 0)) || [[ always_notify_on_failure == "no" ]]; then
+    if ((last_status == 0)) || [[ $always_notify_on_failure == "no" ]]; then
         local command_complete_timeout
         zstyle -s ':notify:*' command-complete-timeout command_complete_timeout
         if (( time_elapsed < command_complete_timeout )); then
