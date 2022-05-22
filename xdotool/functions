@@ -137,5 +137,7 @@ function store-window-id() {
     fi
 }
 
-autoload -U add-zsh-hook
-add-zsh-hook preexec store-window-id
+if zstyle -t ':notify:' check-focus; then
+    autoload -U add-zsh-hook
+    add-zsh-hook preexec store-window-id
+fi
