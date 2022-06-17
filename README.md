@@ -24,6 +24,8 @@ _When using `tmux` on Yosemite:_
 `reattach-to-user-namespace` is required to prevent `terminal-notifier` from hanging
 (see [julienXX/terminal-notifier#115][issue115] for details).
 
+
+
 #### Linux/Other
 
 Install `notify-send` (default*) -- available in [libnotify][libnotify]
@@ -149,6 +151,15 @@ bundle commands.
 Antigen will handle cloning the plugin for you automatically the next time you
 start zsh. You can also add the plugin to a running zsh with `antigen bundle
 marzocchi/zsh-notify` for testing before adding it to your `.zshrc`.
+
+### [Fig](https://fig.io)
+
+Fig adds apps, shortcuts, and autocomplete to your existing terminal.
+
+Install `zsh-notify` in just one click.
+
+<a href="https://fig.io/plugins/other/zsh-notify_marzocchi" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
+
 
 ### [Oh-My-Zsh](http://ohmyz.sh/)
 
