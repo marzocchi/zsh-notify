@@ -28,7 +28,7 @@ _When using `tmux` on Yosemite:_
 
 #### Linux/Other
 
-Install `notify-send` (default*) -- available in [libnotify][libnotify]
+Install `notify-send` (default*) -- available in [libnotify][libnotify], `xdotool` and `wmctrl`
 
 ---
 
