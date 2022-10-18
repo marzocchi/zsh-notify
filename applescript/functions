@@ -4,6 +4,7 @@
 # active terminal window or tab, status 1 when the window or tab is in background
 # and status 2 if the current terminal is not supported (eg. it's not iTerm2 nor
 # Apple Terminal).
+# Add vscode support for vscode integrated terminal
 function is-terminal-active() {
     local plugin_dir
 
@@ -30,6 +31,8 @@ function is-terminal-active() {
             term=iterm2
         elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]] || [[ -n "$TERM_SESSION_ID" ]]; then
             term=apple-terminal
+        elif [[ "$TERM_PROGRAM" == 'vscode' ]]; then
+            term=vscode
         else
             return 2
         fi
@@ -76,6 +79,8 @@ function zsh-notify() {
         app_id="com.googlecode.iterm2"
     elif [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]] || [[ -n "$TERM_SESSION_ID" ]]; then
         app_id="com.apple.terminal"
+    elif [[ "$TERM_PROGRAM" == 'vscode' ]]; then
+        app_id="com.microsoft.VSCode"
     fi
 
     if [[ -n "$app_id" ]]; then
