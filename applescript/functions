@@ -4,7 +4,6 @@
 # active terminal window or tab, status 1 when the window or tab is in background
 # and status 2 if the current terminal is not supported (eg. it's not iTerm2 nor
 # Apple Terminal).
-# Add vscode support for vscode integrated terminal
 function is-terminal-active() {
     local plugin_dir
 

@@ -2,7 +2,6 @@
 
 plugin_dir="$(dirname $0:A)"
 
-# add support for vscode
 if [[ "$TERM_PROGRAM" == 'iTerm.app' ]] || [[ "$TERM_PROGRAM" == 'Apple_Terminal' ]] || [[ "$TERM_PROGRAM" == 'vscode' ]] || [[ -n "$ITERM_SESSION_ID" ]] || [[ -n "$TERM_SESSION_ID" ]]; then
     source "$plugin_dir"/applescript/functions
 elif [[ "$DISPLAY" != '' ]] && command -v xdotool > /dev/null 2>&1 &&  command -v wmctrl > /dev/null 2>&1; then
