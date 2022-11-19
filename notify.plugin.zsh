@@ -90,8 +90,7 @@ function _zsh-notify-should-notify() {
 # store command line and start time for later
 function zsh-notify-before-command() {
     declare -g zsh_notify_last_command="$1"
-    declare -g zsh_notify_start_time
-    zsh_notify_start_time="$(date "+%s")"
+    declare -g zsh_notify_start_time=$EPOCHSECONDS
 }
 
 # notify about the last command's success or failure -- maybe.
@@ -105,8 +104,7 @@ function zsh-notify-after-command() {
 
     touch "$error_log"
     (
-        now="$(date "+%s")"
-        (( time_elapsed = now - zsh_notify_start_time ))
+        (( time_elapsed = EPOCHSECONDS - zsh_notify_start_time ))
         if _zsh-notify-should-notify "$last_status" "$time_elapsed"; then
             local result
             result="$(((last_status == 0)) && echo success || echo error)"
@@ -116,6 +114,8 @@ function zsh-notify-after-command() {
 
     unset zsh_notify_last_command zsh_notify_start_time
 }
+
+zmodload zsh/datetime
 
 autoload -U add-zsh-hook
 add-zsh-hook preexec zsh-notify-before-command
