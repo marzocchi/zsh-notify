@@ -49,7 +49,7 @@ function _zsh-notify-is-command-blacklisted() {
         return 1
     fi
     local cmd
-    cmd="$(_zsh-notify-expand-command-aliases "$last_command")"
+    cmd="$(_zsh-notify-expand-command-aliases "$zsh_notify_last_command")"
     print -rn -- "$cmd" | grep -q -E "$blacklist_regex"
 }
 
@@ -60,7 +60,7 @@ function _zsh-notify-is-ssh() {
 function _zsh-notify-should-notify() {
     local last_status="$1"
     local time_elapsed="$2"
-    if [[ -z $start_time ]] || _zsh-notify-is-command-blacklisted; then
+    if [[ -z $zsh_notify_start_time ]] || _zsh-notify-is-command-blacklisted; then
         return 1
     fi
     local enable_on_ssh
@@ -89,9 +89,9 @@ function _zsh-notify-should-notify() {
 
 # store command line and start time for later
 function zsh-notify-before-command() {
-    declare -g last_command="$1"
-    declare -g start_time
-    start_time="$(date "+%s")"
+    declare -g zsh_notify_last_command="$1"
+    declare -g zsh_notify_start_time
+    zsh_notify_start_time="$(date "+%s")"
 }
 
 # notify about the last command's success or failure -- maybe.
@@ -106,15 +106,15 @@ function zsh-notify-after-command() {
     touch "$error_log"
     (
         now="$(date "+%s")"
-        (( time_elapsed = now - start_time ))
+        (( time_elapsed = now - zsh_notify_start_time ))
         if _zsh-notify-should-notify "$last_status" "$time_elapsed"; then
             local result
             result="$(((last_status == 0)) && echo success || echo error)"
-            "$notifier" "$result" "$time_elapsed" <<< "$last_command"
+            "$notifier" "$result" "$time_elapsed" <<< "$zsh_notify_last_command"
         fi
     )  2>&1 | sed 's/^/zsh-notify: /' >> "$error_log"
 
-    unset last_command start_time
+    unset zsh_notify_last_command zsh_notify_start_time
 }
 
 autoload -U add-zsh-hook
