@@ -73,11 +73,11 @@ function zsh-notify() {
 
     function play-sound {
         if command -v paplay > /dev/null 2>&1; then
-            paplay "$1"
+            paplay "$1" &> /dev/null &
         elif command -v aplay > /dev/null 2>&1; then
-            aplay "$1"
+            aplay "$1" &> /dev/null &
         elif command -v ossplay > /dev/null 2>&1; then
-            ossplay "$1"
+            ossplay "$1" &> /dev/null &
         else
             echo "could not find a sound file player." >&2
             return 1
