@@ -2,7 +2,7 @@
 
 @setup {
   PATH="/bin:/usr/bin:/usr/local/bin"
-  load ../notify.plugin.zsh
+  load ../zsh-notify.plugin.zsh
   load _support/functions
 }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env zunit
 
 @setup {
-  load ../notify.plugin.zsh
+  load ../zsh-notify.plugin.zsh
 
   if [[ "$TERM_PROGRAM" != "iTerm.app" ]] && [[ -z "$ITERM_SESSION_ID" ]]; then
     skip 'this test must be run in iTerm.app'
