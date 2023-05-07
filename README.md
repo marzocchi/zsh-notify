@@ -36,14 +36,14 @@ Install `notify-send` (default*) -- available in [libnotify][libnotify], `xdotoo
 
 ### Installation
 
-Just clone this repository and source `notify.plugin.zsh` in your `~/.zshrc`,
+Just clone this repository and source `zsh-notify.plugin.zsh` in your `~/.zshrc`,
 or see below for instructions on installing with some popular package managers.
 
 Configuration
 ---
 
 The behavior of zsh-notify can be modified by using `zstyle` **after**
-sourcing `notify.plugin.zsh`.
+sourcing `zsh-notify.plugin.zsh`.
 
 - Set a custom title for error and success notifications, when using the
   built-in notifier.

@@ -1,7 +1,7 @@
 #!/usr/bin/env zunit
 
 @setup {
-  load ../notify.plugin.zsh
+  load ../zsh-notify.plugin.zsh
   zstyle ':notify:*' always-check-active-window 'yes'
 
   if ! command -v xdotool 1>/dev/null 2>/dev/null; then
