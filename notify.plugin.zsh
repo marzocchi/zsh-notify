@@ -17,7 +17,6 @@ zstyle ':notify:*' error-log /dev/stderr
 zstyle ':notify:*' notifier zsh-notify
 zstyle ':notify:*' expire-time 0
 zstyle ':notify:*' app-name ''
-zstyle ':notify:*' notifier zsh-notify
 zstyle ':notify:*' success-title '#win (in #{time_elapsed})'
 zstyle ':notify:*' success-sound ''
 zstyle ':notify:*' success-icon ''
