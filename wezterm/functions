@@ -1,0 +1,52 @@
+# vim: set nowrap filetype=zsh:
+#
+# is-terminal-active always exits with status 1 since the WezTerm script itself
+# handles this detection.
+function is-terminal-active() {
+    # FIXME: re-add tmux support
+    return 1
+}
+
+function zsh-notify() {
+    local message title time_elapsed type check_focus
+
+    if [[ $# -lt 2 ]]; then
+        echo usage: zsh-notify TYPE TIME_ELAPSED 1>&2
+        return 1
+    fi
+
+    zstyle -s ':notify:' plugin-dir plugin_dir
+    source "$plugin_dir"/lib
+
+    type="$1"
+    time_elapsed="$(format-time $2)"
+    message=$(<&0)
+
+    # sound and icon not supported by WezTerm
+
+    title=$(notification-title "$type" time_elapsed "$time_elapsed")
+
+    check_focus='false'
+    zstyle -t ':notify:*' check-focus \
+      && check_focus='true'
+
+    zstyle -s ':notify:' expire-time expire_time
+
+    __wezterm_set_user_var NOTIFICATION "$(jq \
+      -nc \
+      --arg title "$title" \
+      --arg message "$message" \
+      --argjson check_focus "$check_focus" \
+      --argjson timeout_milliseconds "$expire_time" \
+      '{
+        title: $title,
+        message: $message,
+        check_focus: $check_focus,
+        timeout_milliseconds: $timeout_milliseconds
+      }' \
+    )"
+
+    if zstyle -t ':notify:' activate-terminal; then
+        wezterm cli activate-pane
+    fi
+}
